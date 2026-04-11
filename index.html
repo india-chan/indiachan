@@ -140,7 +140,17 @@
 
         function renderBoard(threads) {
             document.getElementById('mainFooter').style.display = 'block';
-            document.getElementById('view-container').innerHTML = threads.map((t, i) => `
+            
+            // 4CHAN BUMP & STICKY LOGIC
+            const sortedThreads = threads.sort((a, b) => {
+                if (a.sticky && !b.sticky) return -1;
+                if (!a.sticky && b.sticky) return 1;
+                const lastA = a.replies[a.replies.length - 1].id;
+                const lastB = b.replies[b.replies.length - 1].id;
+                return lastB - lastA;
+            });
+
+            document.getElementById('view-container').innerHTML = sortedThreads.map((t, i) => `
                 <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
                     <div class="thread-number">#${i + 1}</div>
                     ${getThumb(t.replies[0].content)}
@@ -202,7 +212,6 @@
             const title = document.getElementById('inpTitle').value;
             const content = document.getElementById('inpContent').value;
             
-            // LOGICAL CHARACTER LIMIT CHECK
             if (title.length > 100) return alert("Title too long (Max 100)");
             if (content.length > 500) return alert("Content too long (Max 500)");
             if (content.length < 2) return alert("Content too short");
