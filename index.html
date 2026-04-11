@@ -3,66 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnonBored</title>
+    <title>IndiaChan // Anonymity First</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background: #05070a; color: #94a3b8; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .glass { background: rgba(13, 17, 28, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.03); }
-        .post-img { max-width: 100%; max-height: 350px; border-radius: 12px; margin-top: 12px; border: 1px solid #1e293b; object-fit: contain; }
-        .quote-ref { color: #3b82f6; font-weight: bold; cursor: pointer; text-decoration: underline; }
+        .post-img { max-width: 100%; max-height: 400px; border-radius: 16px; margin-top: 12px; border: 1px solid #1e293b; object-fit: contain; background: #000; }
+        .quote-ref { color: #ff9933; font-weight: bold; cursor: pointer; text-decoration: underline; }
         .flag { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #ff9933; border-radius: 10px; }
+        .accent-text { color: #ff9933; }
+        .accent-bg { background: #ff9933; }
     </style>
 </head>
 <body class="pb-32">
 
-    <div id="ageWall" class="fixed inset-0 bg-black z-[100] flex items-center justify-center p-8 text-center">
+    <div id="ageWall" class="fixed inset-0 bg-[#05070a] z-[100] flex items-center justify-center p-8 text-center">
         <div class="max-w-sm">
-            <h1 class="text-5xl font-black text-white mb-6 italic tracking-tighter">ANON<span class="text-blue-600">BORED</span></h1>
-            <p class="text-slate-400 mb-8 leading-relaxed text-sm">Welcome to a 18+ anonymous space. Content is user-generated and ephemeral. Data wipes every 48 hours.</p>
-            <button onclick="acceptAge()" class="bg-blue-600 w-full py-5 rounded-2xl text-white font-black text-xl hover:bg-blue-500 transition">I AM 18+ ENTER</button>
+            <h1 class="text-6xl font-black text-white mb-6 italic tracking-tighter uppercase">India<span class="accent-text">Chan</span></h1>
+            <p class="text-slate-400 mb-8 leading-relaxed text-sm">Welcome to India's premier anonymous image board. 18+ Only. Content is ephemeral and disappears every 48 hours.</p>
+            <button onclick="acceptAge()" class="accent-bg w-full py-5 rounded-2xl text-white font-black text-xl hover:opacity-90 transition shadow-2xl shadow-orange-900/20">ENTER BOARD</button>
         </div>
     </div>
 
     <div class="max-w-2xl mx-auto px-4">
         <header class="py-16 flex justify-between items-end">
             <div>
-                <h1 onclick="window.location.hash = ''" class="text-5xl font-black text-white cursor-pointer tracking-tighter italic">ANON<span class="text-blue-600">BORED</span></h1>
-                <div id="stats" class="text-[10px] uppercase tracking-[0.3em] text-slate-700 mt-3 font-bold italic">Checking Board...</div>
+                <h1 onclick="window.location.hash = ''" class="text-5xl font-black text-white cursor-pointer tracking-tighter italic uppercase">India<span class="accent-text">Chan</span></h1>
+                <div id="stats" class="text-[10px] uppercase tracking-[0.3em] text-slate-700 mt-3 font-bold italic">Initializing...</div>
             </div>
-            <button onclick="openModal()" class="bg-white text-black px-6 py-2 rounded-full font-black text-xs tracking-widest hover:bg-blue-600 hover:text-white transition">NEW POST</button>
+            <button onclick="openModal()" class="bg-white text-black px-6 py-2 rounded-full font-black text-xs tracking-widest hover:accent-bg hover:text-white transition">NEW THREAD</button>
         </header>
 
         <div id="view-container" class="space-y-4"></div>
 
         <footer class="mt-32 py-10 opacity-30 text-[10px] text-center leading-loose tracking-widest uppercase">
-            Disclaimer: Not responsible for user content. 18+ only.
+            IndiaChan © 2026 // Post Responsibly // 18+
         </footer>
     </div>
 
     <div id="postModal" class="hidden fixed inset-0 bg-black/95 flex items-center justify-center p-4 z-50">
         <div class="glass w-full max-w-lg p-10 rounded-[2.5rem] border border-slate-800">
-            <input id="inpTitle" type="text" placeholder="Thread Subject" class="w-full bg-slate-900/50 p-4 rounded-xl mb-4 border border-slate-800 outline-none text-white">
-            <textarea id="inpContent" placeholder="Message... (Paste image URLs to embed)" class="w-full bg-slate-900/50 p-4 rounded-xl mb-6 border border-slate-800 h-56 outline-none text-white"></textarea>
-            <div class="flex gap-4">
+            <input id="inpTitle" type="text" placeholder="Subject (Optional)" class="w-full bg-slate-900/50 p-4 rounded-xl mb-4 border border-slate-800 outline-none text-white focus:border-orange-500 transition">
+            <textarea id="inpContent" placeholder="Your message... Paste image links to embed." class="w-full bg-slate-900/50 p-4 rounded-xl mb-6 border border-slate-800 h-56 outline-none text-white focus:border-orange-500 transition"></textarea>
+            <div class="flex gap-4 text-center">
                 <button onclick="closeModal()" class="flex-1 text-slate-500 font-bold uppercase text-[10px] tracking-widest">Cancel</button>
-                <button onclick="submitPost()" class="flex-[2] bg-blue-600 py-4 rounded-2xl text-white font-black tracking-widest hover:bg-blue-500 transition">POST ANON</button>
+                <button onclick="submitPost()" class="flex-[2] accent-bg py-4 rounded-2xl text-white font-black tracking-widest hover:opacity-90 transition">POST ANON</button>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURATION
+        // CONFIG
         const WORKER_URL = 'https://anon-board.mail4rm4n.workers.dev/'; 
         const AUTH_KEY = 'my-secret-key-123'; 
 
-        // AGE WALL LOGIC
         function acceptAge() { localStorage.setItem('anon_age', 't'); document.getElementById('ageWall').classList.add('hidden'); }
         if(localStorage.getItem('anon_age')) document.getElementById('ageWall').classList.add('hidden');
 
-        // CORE API CALLER
         async function api(path = "", method = "GET", body = null, headers = {}) {
             try {
                 const res = await fetch(`${WORKER_URL}${path}`, {
@@ -70,28 +70,22 @@
                     headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json', ...headers },
                     body: body ? JSON.stringify(body) : null
                 });
-                if (res.status === 401) { alert("Invalid Admin Password"); return null; }
+                if (res.status === 401) { alert("Admin Access Denied"); return null; }
                 return await res.json();
             } catch (e) { return null; }
         }
 
-        // SMART DELETE (Target Thread or Specific Reply)
         async function adminDelete(threadId, replyId = null) {
-            const pass = prompt("Enter Admin Password:");
+            const pass = prompt("Admin Password Required:");
             if(!pass) return;
             const query = replyId ? `?id=${threadId}&replyId=${replyId}` : `?id=${threadId}`;
             const res = await api(query, "DELETE", null, { 'X-Admin-Pass': pass });
-            if(res) {
-                if(!replyId) window.location.hash = ''; 
-                router(); 
-            }
+            if(res) { if(!replyId) window.location.hash = ''; router(); }
         }
 
         async function updateStats() {
             const s = await api("stats");
-            const active = s?.active ?? 0;
-            const life = s?.lifetime ?? 0;
-            document.getElementById('stats').innerText = `${active} ACTIVE / ${life} LIFETIME / 18+ ONLY`;
+            document.getElementById('stats').innerText = `${s?.active ?? 0} ACTIVE THREADS / ${s?.lifetime ?? 0} TOTAL POSTS`;
         }
 
         function formatContent(text) {
@@ -104,7 +98,6 @@
 
         function quote(id) { openModal(); document.getElementById('inpContent').value += `>>${id} `; }
 
-        // NAVIGATION ROUTER
         async function router() {
             const hash = window.location.hash;
             updateStats();
@@ -117,46 +110,47 @@
             }
         }
 
-        // MAIN BOARD RENDER
         function renderBoard(threads) {
             document.getElementById('view-container').innerHTML = threads.map(t => `
                 <div class="relative group">
-                    <div onclick="window.location.hash = '#thread/${t.id}'" class="glass p-8 rounded-[2.5rem] cursor-pointer hover:border-slate-800 transition">
-                        <h2 class="text-2xl font-black text-white mb-2 leading-tight">${t.title}</h2>
+                    <div onclick="window.location.hash = '#thread/${t.id}'" class="glass p-8 rounded-[2.5rem] cursor-pointer hover:border-orange-900/30 transition">
+                        <h2 class="text-2xl font-black text-white mb-2 leading-tight uppercase tracking-tight">${t.title}</h2>
                         <p class="text-slate-500 text-sm line-clamp-2">${t.replies[0].content}</p>
-                        <div class="mt-6 text-[9px] font-black text-blue-600 uppercase tracking-widest">${t.replies.length} REPLIES // ID: ${t.id}</div>
+                        <div class="mt-6 text-[9px] font-black accent-text uppercase tracking-widest">${t.replies.length} REPLIES // ID: ${t.id}</div>
                     </div>
-                    <button onclick="adminDelete('${t.id}')" class="absolute top-8 right-8 opacity-0 group-hover:opacity-100 text-red-900 hover:text-red-500 text-[10px] font-black transition italic uppercase">Nuke Thread</button>
+                    <button onclick="adminDelete('${t.id}')" class="absolute top-8 right-8 opacity-0 group-hover:opacity-100 text-red-900 hover:text-red-500 text-[10px] font-black transition italic uppercase">Delete Thread</button>
                 </div>
             `).join('');
+            if(threads.length === 0) {
+                document.getElementById('view-container').innerHTML = `<div class="text-center py-20 opacity-20 font-black tracking-widest">BOARD IS EMPTY</div>`;
+            }
         }
 
-        // THREAD VIEW RENDER
         function renderThread(t) {
             document.getElementById('view-container').innerHTML = `
-                <button onclick="window.location.hash = ''" class="mb-8 text-slate-600 font-black text-[10px] tracking-widest flex items-center gap-2 hover:text-white transition"><i class="fa-solid fa-arrow-left"></i> BACK TO BOARD</button>
+                <button onclick="window.location.hash = ''" class="mb-8 text-slate-600 font-black text-[10px] tracking-widest flex items-center gap-2 hover:text-white transition uppercase"><i class="fa-solid fa-arrow-left"></i> Return to IndiaChan</button>
                 <div class="space-y-4">
                     ${t.replies.map((r, i) => {
                         const dId = r.id || "000000";
                         return `
                         <div class="relative group">
-                            <div class="glass p-6 rounded-3xl ${i > 0 ? 'ml-8' : 'border-blue-900/20'}">
+                            <div class="glass p-6 rounded-3xl ${i > 0 ? 'ml-8' : 'border-orange-500/10'}">
                                 <div class="flex justify-between items-center mb-4">
                                     <div class="flex items-center gap-3">
                                         <div class="flag" style="background:#${r.hash}"></div>
-                                        <span class="text-[9px] font-black text-slate-500 uppercase">Anon</span>
+                                        <span class="text-[9px] font-black text-slate-500 uppercase">Anonymous</span>
                                         <span class="text-[8px] text-slate-800 font-bold">${new Date(r.time).toLocaleTimeString()}</span>
                                     </div>
-                                    <span onclick="quote('${dId}')" class="text-[9px] text-slate-800 font-black cursor-pointer hover:text-blue-500 transition">ID: ${dId}</span>
+                                    <span onclick="quote('${dId}')" class="text-[9px] text-slate-800 font-black cursor-pointer hover:accent-text transition">ID: ${dId}</span>
                                 </div>
                                 <div class="text-slate-300 text-sm leading-relaxed">${formatContent(r.content)}</div>
                             </div>
-                            <button onclick="adminDelete('${t.id}', '${dId}')" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-red-900 hover:text-red-500 text-[8px] font-black transition italic">DEL POST</button>
+                            <button onclick="adminDelete('${t.id}', '${dId}')" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 text-red-900 hover:text-red-500 text-[8px] font-black transition italic uppercase">Del Post</button>
                         </div>`;
                     }).join('')}
                 </div>
                 <div class="fixed bottom-8 left-0 right-0 px-6">
-                    <button onclick="openModal()" class="max-w-2xl mx-auto block w-full bg-blue-600 py-5 rounded-2xl text-white font-black tracking-widest shadow-2xl hover:bg-blue-500 transition">REPLY TO THREAD</button>
+                    <button onclick="openModal()" class="max-w-2xl mx-auto block w-full accent-bg py-5 rounded-2xl text-white font-black tracking-widest shadow-2xl hover:opacity-90 transition uppercase">Reply to Thread</button>
                 </div>
             `;
         }
@@ -173,7 +167,7 @@
             const res = await api("", "POST", {
                 type: isReply ? 'reply' : 'thread',
                 threadId: isReply ? window.location.hash.split('/')[1] : null,
-                title: document.getElementById('inpTitle').value,
+                title: document.getElementById('inpTitle').value || "Untitled",
                 content: document.getElementById('inpContent').value
             });
             if (res) { closeModal(); document.getElementById('inpContent').value = ''; router(); }
