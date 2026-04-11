@@ -12,7 +12,9 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="IndiaChan | Jai Hind!">
     <meta property="og:description" content="The premier anonymous imageboard for India. Discuss tech and culture privately.">
-    <meta property="og:image" content="https://i.ibb.co/6e999c0/indiachan-preview.png"> <script src="https://cdn.tailwindcss.com"></script>
+    <meta property="og:image" content="https://i.ibb.co/6e999c0/indiachan-preview.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -23,6 +25,7 @@
         .glass-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-hover:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 153, 51, 0.3); transform: translateY(-3px); }
         
+        /* Thread Numbering Badge */
         .thread-number { 
             position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d);
             color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px;
@@ -101,7 +104,6 @@
                 method, headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json', ...headers },
                 body: body ? JSON.stringify(body) : null
             });
-            if (res.status === 403) alert("Banned or VPN detected.");
             return res.ok ? await res.json() : null;
         }
 
@@ -110,13 +112,20 @@
             const fd = new FormData(); fd.append("image", input.files[0]);
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
             const data = await res.json();
-            if(data.success) { document.getElementById('inpContent').value += `\n${data.data.url}`; btn.innerText = "READY"; }
+            if(data.success) { document.getElementById('inpContent').value += `\n${data.data.url}`; btn.innerText = "IMAGE ADDED"; }
         }
 
         function getThumb(content) {
             const match = content.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i);
             return match ? `<div class="thumb-box"><img src="${match[0]}" class="thumb-img"></div>` : 
                            `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">TXT</div>`;
+        }
+
+        async function handleReport(tId, rId = '') {
+            const reason = prompt("Report Reason (Spam, Harassment, etc):");
+            if(!reason) return;
+            const res = await api(`?id=${tId}`, "POST", { type: 'report', replyId: rId, reason: reason });
+            if(res) alert("Report submitted.");
         }
 
         function renderBoard(threads) {
@@ -130,13 +139,14 @@
                             <h2 class="text-sm font-black text-white uppercase truncate tracking-tight">${t.title}</h2>
                         </div>
                         <p class="text-slate-500 text-[11px] line-clamp-2 opacity-80">${t.replies[0].content}</p>
-                        <div class="mt-3 text-[9px] font-black text-slate-600 tracking-widest uppercase">${t.replies.length} REPLIES</div>
+                        <div class="mt-3 text-[9px] font-black text-slate-600 tracking-widest uppercase">${t.replies.length} TRANSMISSIONS</div>
                     </div>
                     <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
-                    <div id="m-${t.id}" class="hidden absolute right-6 top-16 w-36 glass rounded-2xl z-50 text-[9px] font-black uppercase shadow-2xl border border-white/10">
-                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Sticky</button>
-                        <button onclick="event.stopPropagation(); handleAction('ban', '${t.id}')" class="w-full p-4 text-left text-red-500 border-b border-white/5">Ban IP</button>
-                        <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-900">Delete</button>
+                    <div id="m-${t.id}" class="hidden absolute right-6 top-16 w-36 glass rounded-2xl z-50 text-[9px] font-black uppercase shadow-2xl border border-white/10 overflow-hidden">
+                        <button onclick="event.stopPropagation(); handleReport('${t.id}')" class="w-full p-4 text-left hover:bg-white/5 accent-text border-b border-white/5">Report Post</button>
+                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Sticky</button>
+                        <button onclick="event.stopPropagation(); handleAction('ban', '${t.id}')" class="w-full p-4 text-left text-red-500 border-b border-white/5">Admin: Ban</button>
+                        <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-900">Admin: Delete</button>
                     </div>
                 </div>
             `).join('');
@@ -144,15 +154,16 @@
 
         function renderThread(t) {
             document.getElementById('view-container').innerHTML = `
-                <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return</button>
+                <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return to Board</button>
                 <div class="space-y-6">
                     ${t.replies.map((r, i) => `
-                        <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12' : 'border-orange-500/20'}">
+                        <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12 border-l-2 border-white/5' : 'border-orange-500/20'}">
                             <div class="flex justify-between items-center mb-5">
                                 <div class="flex items-center gap-3"><div class="w-3 h-3 rounded-full" style="background:#${r.hash}"></div><span class="text-[10px] font-black text-slate-500 uppercase">Anon ID: ${r.hash}</span></div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="hidden absolute right-8 top-12 w-28 glass rounded-2xl z-50 text-[9px] font-black uppercase">
-                                    <button onclick="handleAction('ban', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-500 border-b border-white/5">Ban IP</button>
+                                    <button onclick="handleReport('${t.id}', '${r.id}')" class="w-full p-4 text-left accent-text border-b border-white/5">Report</button>
+                                    <button onclick="handleAction('ban', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-500 border-b border-white/5">Ban</button>
                                     <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-900">Delete</button>
                                 </div>
                             </div>
@@ -178,17 +189,17 @@
         async function submitPost() {
             if(parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
             const hash = window.location.hash; const isReply = hash.startsWith('#thread/');
-            await api("", "POST", {
+            const res = await api("", "POST", {
                 type: isReply ? 'reply' : 'thread',
                 threadId: isReply ? hash.split('/')[1] : null,
                 title: document.getElementById('inpTitle').value || "Anonymous",
                 content: document.getElementById('inpContent').value
             });
-            closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router();
+            if(res) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
         }
 
         async function handleAction(type, tId, rId = null) {
-            const pass = prompt("Key:"); if(!pass) return;
+            const pass = prompt("Admin Password Required:"); if(!pass) return;
             const headers = { 'X-Admin-Pass': pass };
             if(type === 'ban') headers['X-Action-Ban'] = 'true';
             const method = type === 'sticky' ? 'PATCH' : 'DELETE';
