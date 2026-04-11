@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IndiaChan | The Premier Indian Anonymous Imageboard</title>
     
-    <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately on the ultimate Bharatchan alternative.">
-    <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum, desi imageboard, tech discussion india, indiachan.com, indiachan.in, bharatchan.com, bharatchan.in">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately.">
+    <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -52,9 +51,9 @@
     </div>
 
     <div class="max-w-2xl mx-auto px-4">
-        <header class="py-16 flex justify-between items-center">
-            <h1 onclick="window.location.hash = ''" class="text-4xl font-black text-white cursor-pointer italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
-            <button onclick="openModal()" class="bg-white text-black px-7 py-2.5 rounded-full font-black text-[10px] tracking-widest uppercase shadow-2xl hover:bg-orange-500 hover:text-white transition-all">New Thread</button>
+        <header class="py-12 flex flex-col sm:flex-row justify-between items-center gap-6 text-center sm:text-left">
+            <h1 onclick="window.location.hash = ''" class="text-5xl font-black text-white cursor-pointer italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
+            <button onclick="openModal()" class="bg-white text-black px-8 py-3 rounded-full font-black text-[10px] tracking-widest uppercase shadow-2xl hover:bg-orange-500 hover:text-white transition-all w-full sm:w-auto">New Thread</button>
         </header>
 
         <div id="view-container" class="space-y-6"></div>
@@ -62,7 +61,7 @@
         <footer id="mainFooter" class="mt-20 py-10 border-t border-white/5 text-center">
             <div class="flex justify-center gap-6 mb-8">
                 <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
-                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">Not Associated with BharatChan</span>
+                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">Not Associated with Older/Other IndianChan or BharatChan</span>
             </div>
             <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">
                 IndiaChan is a law-abiding platform. All posts are user-generated. We do not endorse or take responsibility for content posted by third parties.
@@ -75,13 +74,14 @@
     </div>
 
     <div id="postModal" class="hidden fixed inset-0 bg-black/90 z-[250] flex items-end sm:items-center justify-center backdrop-blur-md">
-        <div class="glass w-full max-w-lg p-6 sm:p-10 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl">
+        <div class="glass w-full max-w-lg p-6 sm:p-10 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center mb-8">
                 <span id="modalTitle" class="text-[11px] font-black accent-text uppercase tracking-widest">New Transmission</span>
                 <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <input id="inpTitle" type="text" placeholder="Subject (Optional)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
-            <textarea id="inpContent" placeholder="Enter anonymous content..." class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
+            <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content... (Max 500)" class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between">
                     <span id="captchaTxt" class="text-[10px] font-black text-slate-500 uppercase"></span>
@@ -167,7 +167,7 @@
             document.getElementById('mainFooter').style.display = 'none';
             document.getElementById('view-container').innerHTML = `
                 <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return to Board</button>
-                <div class="space-y-6">
+                <div class="space-y-6 pb-20">
                     ${t.replies.map((r, i) => `
                         <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12 border-l-2 border-white/5' : 'border-orange-500/20'}">
                             <div class="flex justify-between items-center mb-5">
@@ -199,13 +199,21 @@
         function closeModal() { document.getElementById('postModal').classList.add('hidden'); }
 
         async function submitPost() {
-            if(parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
+            const title = document.getElementById('inpTitle').value;
+            const content = document.getElementById('inpContent').value;
+            
+            // LOGICAL CHARACTER LIMIT CHECK
+            if (title.length > 100) return alert("Title too long (Max 100)");
+            if (content.length > 500) return alert("Content too long (Max 500)");
+            if (content.length < 2) return alert("Content too short");
+            if (parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
+
             const hash = window.location.hash; const isReply = hash.startsWith('#thread/');
             const res = await api("", "POST", {
                 type: isReply ? 'reply' : 'thread',
                 threadId: isReply ? hash.split('/')[1] : null,
-                title: document.getElementById('inpTitle').value || "Anonymous",
-                content: document.getElementById('inpContent').value
+                title: title || "Anonymous",
+                content: content
             });
             if(res) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
         }
