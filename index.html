@@ -1,83 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-site-verification" content="JlT0O6xHnMEp4t3ZEwYNmlxq0N6ThD510-HlJAv4fRE" />
     <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, and news privately.">
     <meta name="keywords" content="indiachan, anonymous indian forum, indian imageboard, indiachan.com, indiachan.in, bharatchan, bharatchan.com, 4chan, 4chan india">
-    <link rel="canonical" href="https://yourusername.github.io/" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IndiaChan | Jai Hind! Love India!</title>
+    <title>IndiaChan | Jai Hind!</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #05070a; color: #94a3b8; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(13, 17, 28, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        body { background: #05070a; color: #94a3b8; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(13, 17, 28, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-hover:hover { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 153, 51, 0.2); transform: translateY(-2px); }
         .post-img { max-width: 100%; border-radius: 12px; margin-top: 10px; border: 1px solid #1e293b; }
-        .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 10px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.05); }
-        .thumb-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .thumb-box { width: 85px; height: 85px; min-width: 85px; border-radius: 14px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.05); }
+        .thumb-img { width: 100%; height: 100%; object-fit: cover; }
         .accent-text { color: #ff9933; }
         .accent-bg { background: #ff9933; }
         .sticky-tag { background: #ff9933; color: white; padding: 2px 6px; border-radius: 4px; font-size: 7px; font-weight: 900; margin-right: 6px; }
-        .dot-menu-btn { position: absolute; top: 1rem; right: 1rem; color: #334155; }
-        input, textarea { background: rgba(15, 23, 42, 0.5) !important; border: 1px solid #1e293b !important; color: white !important; }
+        .thread-number { font-family: 'Monaco', monospace; font-size: 10px; color: #334155; }
+        input, textarea { background: rgba(15, 23, 42, 0.6) !important; border: 1px solid #1e293b !important; color: white !important; transition: border 0.3s; }
+        input:focus, textarea:focus { border-color: #ff9933 !important; }
+        .transition-all { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
 <body class="pb-24">
 
     <div id="ageWall" class="fixed inset-0 bg-[#05070a] z-[200] flex items-center justify-center p-6 text-center">
         <div class="max-w-sm w-full">
-            <h1 class="text-5xl font-black text-white mb-4 italic uppercase">India<span class="accent-text">Chan</span></h1>
-            <p class="text-slate-500 mb-8 text-[10px] tracking-widest uppercase">18+ Only // Digital Ephemera</p>
-            <button onclick="acceptAge()" class="accent-bg w-full py-4 rounded-xl text-white font-black tracking-widest">ENTER</button>
+            <h1 class="text-5xl font-black text-white mb-4 italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
+            <p class="text-slate-500 mb-8 text-[10px] tracking-widest uppercase">Anonymous Imageboard // 18+</p>
+            <button onclick="acceptAge()" class="accent-bg w-full py-4 rounded-xl text-white font-black tracking-widest hover:scale-105 transition-all">ENTER BOARD</button>
         </div>
     </div>
 
     <div class="max-w-2xl mx-auto px-4">
         <header class="py-12 flex justify-between items-center">
             <h1 onclick="window.location.hash = ''" class="text-3xl font-black text-white cursor-pointer italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
-            <button onclick="openModal()" class="bg-white text-black px-6 py-2 rounded-full font-black text-[10px] tracking-widest uppercase shadow-xl">New Thread</button>
+            <button onclick="openModal()" class="bg-white text-black px-6 py-2 rounded-full font-black text-[10px] tracking-widest uppercase shadow-xl hover:bg-orange-500 hover:text-white transition-all">New Thread</button>
         </header>
 
         <div id="view-container" class="space-y-4"></div>
-
-        <footer class="mt-32 py-10 opacity-30 text-[10px] text-center px-6 leading-loose tracking-widest uppercase border-t border-white/5">
-            <div class="mb-4 text-slate-500">IndiaChan is an independent project. Not associated with legacy boards.</div>
-            <div>Compliance: <span class="text-white font-bold select-all">JefferyEpstienMossad@proton.me</span></div>
-            <button onclick="openDisclaimer()" class="underline block mx-auto mt-4">Full Legal Disclaimer</button>
-        </footer>
     </div>
 
-    <div id="postModal" class="hidden fixed inset-0 bg-black/95 z-[150] flex items-end sm:items-center justify-center">
-        <div class="glass w-full max-w-lg p-6 sm:p-10 rounded-t-[2rem] sm:rounded-[2.5rem] border-t border-slate-800">
+    <div id="postModal" class="hidden fixed inset-0 bg-black/90 z-[150] flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="glass w-full max-w-lg p-6 sm:p-10 rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl">
             <div class="flex justify-between items-center mb-6">
-                <span id="modalMode" class="text-[10px] font-black tracking-widest accent-text uppercase">New Transmission</span>
-                <button onclick="closeModal()" class="text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <span id="modalTitle" class="text-[10px] font-black accent-text uppercase tracking-widest">New Transmission</span>
+                <button onclick="closeModal()" class="text-slate-600 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            
             <input id="inpTitle" type="text" placeholder="Subject (Optional)" class="w-full p-4 rounded-xl mb-3 outline-none text-sm">
-            <textarea id="inpContent" placeholder="Content... Paste ImgBB links to show images." class="w-full p-4 rounded-xl mb-4 h-40 outline-none text-sm"></textarea>
+            <textarea id="inpContent" placeholder="Write your message here..." class="w-full p-4 rounded-xl mb-4 h-44 outline-none text-sm leading-relaxed"></textarea>
             
             <div class="grid grid-cols-2 gap-3 mb-6">
                 <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
-                    <span id="captchaTxt" class="text-xs font-bold text-slate-400"></span>
-                    <input id="inpCaptcha" type="number" placeholder="?" class="w-12 bg-transparent text-center border-b border-orange-500! outline-none">
+                    <span id="captchaTxt" class="text-[10px] font-bold text-slate-500 uppercase"></span>
+                    <input id="inpCaptcha" type="number" class="w-12 bg-transparent text-center border-b border-orange-500 outline-none font-bold text-white">
                 </div>
-                <button onclick="document.getElementById('imgInput').click()" id="uploadBtn" class="bg-slate-800 rounded-xl text-[9px] font-black uppercase text-slate-400"><i class="fa-solid fa-image mr-1"></i> Upload</button>
+                <button onclick="document.getElementById('imgInput').click()" id="uploadBtn" class="bg-slate-800 rounded-xl text-[9px] font-black uppercase text-slate-400 hover:bg-slate-700 transition-all">Add Image</button>
                 <input type="file" id="imgInput" class="hidden" accept="image/*" onchange="uploadToImgBB(this)">
             </div>
-
-            <button onclick="submitPost()" class="accent-bg w-full py-4 rounded-xl text-white font-black tracking-widest uppercase shadow-2xl">Transmit</button>
-        </div>
-    </div>
-
-    <div id="disclaimerModal" class="hidden fixed inset-0 bg-black/98 z-[300] flex items-center justify-center p-6">
-        <div class="glass max-w-xl w-full p-8 rounded-[2rem] border border-slate-800 text-[10px] tracking-wide text-slate-400 uppercase leading-relaxed overflow-y-auto max-h-[80vh]">
-            <h2 class="text-xl font-black text-white mb-4 accent-text">Legal Compliance</h2>
-            <p class="mb-4">1. IndiaChan follows the IT Act 2000 & Intermediary Guidelines 2021.</p>
-            <p class="mb-4">2. We are an independent entity, not linked to IndianChan or BharatChan.</p>
-            <p class="mb-4">3. Illegal content is prohibited. VPNs are monitored. 10-report withhold active.</p>
-            <button onclick="closeDisclaimer()" class="accent-bg w-full py-4 mt-6 text-white font-black rounded-xl">I AGREE</button>
+            <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-4 rounded-2xl text-white font-black uppercase tracking-widest shadow-lg hover:brightness-110 active:scale-95 transition-all">Submit Post</button>
         </div>
     </div>
 
@@ -98,16 +81,13 @@
             document.getElementById('inpCaptcha').value = '';
         }
 
-        function openDisclaimer() { document.getElementById('disclaimerModal').classList.remove('hidden'); }
-        function closeDisclaimer() { document.getElementById('disclaimerModal').classList.add('hidden'); }
-
         async function api(path = "", method = "GET", body = null, headers = {}) {
             try {
                 const res = await fetch(`${WORKER_URL}${path}`, {
                     method, headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json', ...headers },
                     body: body ? JSON.stringify(body) : null
                 });
-                if (res.status === 403) alert("Access Denied: VPN/Proxy detected or IP Banned.");
+                if (res.status === 403) alert("Access Denied: VPN or Ban active.");
                 return res.ok ? await res.json() : null;
             } catch(e) { return null; }
         }
@@ -120,27 +100,111 @@
             const data = await res.json();
             if(data.success) {
                 document.getElementById('inpContent').value += `\n${data.data.url}`;
-                btn.innerText = "DONE";
+                btn.innerText = "IMAGE ADDED";
+            }
+        }
+
+        function getThumb(content) {
+            const match = content.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i);
+            return match ? `<div class="thumb-box"><img src="${match[0]}" class="thumb-img" loading="lazy"></div>` : 
+                           `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black bg-slate-900/50">TXT</div>`;
+        }
+
+        function renderBoard(threads) {
+            document.getElementById('view-container').innerHTML = threads.map((t, i) => `
+                <div class="relative glass glass-hover p-4 rounded-[1.8rem] flex gap-4 items-center transition-all cursor-pointer">
+                    <span class="thread-number absolute -left-2 top-1/2 -translate-y-1/2 -rotate-90 opacity-40">#${i + 1}</span>
+                    ${getThumb(t.replies[0].content)}
+                    <div onclick="window.location.hash = '#thread/${t.id}'" class="flex-1 min-w-0">
+                        <div class="flex items-center mb-1">
+                            ${t.sticky ? '<span class="sticky-tag">STICKY</span>' : ''}
+                            <h2 class="text-sm font-bold text-white uppercase truncate tracking-tight">${t.title}</h2>
+                        </div>
+                        <p class="text-slate-500 text-[11px] line-clamp-2 leading-snug">${t.replies[0].content}</p>
+                        <div class="mt-2 text-[8px] font-black uppercase text-slate-600 tracking-widest">${t.replies.length} TRANSMISSIONS</div>
+                    </div>
+                    <button onclick="toggleMenu('${t.id}')" class="p-2 text-slate-700 hover:text-white transition-all"><i class="fa-solid fa-ellipsis-v"></i></button>
+                    <div id="m-${t.id}" class="hidden absolute right-4 top-12 w-32 glass rounded-2xl z-50 text-[8px] font-black uppercase shadow-2xl border border-white/10 overflow-hidden">
+                        <button onclick="handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 accent-text border-b border-white/5">Sticky</button>
+                        <button onclick="handleAction('ban', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 text-red-500 border-b border-white/5">Ban IP</button>
+                        <button onclick="handleAction('delete', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 text-red-900">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderThread(t) {
+            document.getElementById('view-container').innerHTML = `
+                <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-600 hover:text-orange-500 transition-all"><i class="fa-solid fa-arrow-left mr-2"></i> Back to Board</button>
+                <div class="space-y-4">
+                    ${t.replies.map((r, i) => `
+                        <div class="relative glass p-6 rounded-[1.8rem] ${i > 0 ? 'ml-4 sm:ml-12 border-l-2 border-orange-500/20' : 'border-orange-500/10 shadow-[0_0_50px_-12px_rgba(255,153,51,0.1)]'}">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full shadow-lg" style="background:#${r.hash}"></div>
+                                    <span class="text-[9px] font-black uppercase text-slate-500 tracking-widest">ID: ${r.hash}</span>
+                                </div>
+                                <button onclick="toggleMenu('${r.id}')" class="text-slate-800 hover:text-white"><i class="fa-solid fa-ellipsis"></i></button>
+                                <div id="m-${r.id}" class="hidden absolute right-6 top-12 w-24 glass rounded-xl z-50 text-[8px] font-black uppercase shadow-2xl">
+                                    <button onclick="handleAction('ban', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-500 border-b border-white/5">Ban IP</button>
+                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-900">Delete</button>
+                                </div>
+                            </div>
+                            <div class="text-slate-300 text-[13px] leading-relaxed whitespace-pre-wrap">${r.content.replace(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi, '<img src="$1" class="post-img" loading="lazy">')}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="fixed bottom-8 left-4 right-4 max-w-2xl mx-auto">
+                    <button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-[0_20px_50px_rgba(255,153,51,0.3)] hover:scale-[1.02] active:scale-95 transition-all">Reply to Thread</button>
+                </div>
+            `;
+        }
+
+        function openModal() {
+            const isReply = window.location.hash.startsWith('#thread/');
+            document.getElementById('modalTitle').innerText = isReply ? "Reply Transmission" : "New Thread Transmission";
+            document.getElementById('inpTitle').style.display = isReply ? 'none' : 'block';
+            document.getElementById('submitBtn').innerText = isReply ? "Submit Reply" : "Post Thread";
+            genCaptcha();
+            document.getElementById('postModal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('postModal').classList.add('hidden'); }
+
+        async function submitPost() {
+            if(parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
+            const hash = window.location.hash;
+            const isReply = hash.startsWith('#thread/');
+            
+            const res = await api("", "POST", {
+                type: isReply ? 'reply' : 'thread',
+                threadId: isReply ? hash.split('/')[1] : null,
+                title: document.getElementById('inpTitle').value || "Untitled",
+                content: document.getElementById('inpContent').value
+            });
+            
+            if(res) {
+                closeModal();
+                document.getElementById('inpContent').value = '';
+                document.getElementById('inpTitle').value = '';
+                router();
             }
         }
 
         async function handleAction(type, tId, rId = null) {
-            const pass = prompt("Admin Key:"); if(!pass) return;
-            // 'ban' uses DELETE method with a special header in our new logic
-            const method = type === 'sticky' ? 'PATCH' : 'DELETE';
+            const pass = prompt("Enter Admin Key:"); if(!pass) return;
             const headers = { 'X-Admin-Pass': pass };
             if(type === 'ban') headers['X-Action-Ban'] = 'true';
-            
+            const method = type === 'sticky' ? 'PATCH' : 'DELETE';
             const query = rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`;
             await api(query, method, null, headers);
             router();
         }
 
-        async function report(tId) {
-            if(confirm("Report this content?")) {
-                await api(`/report?id=${tId}`, "POST");
-                router();
-            }
+        function toggleMenu(id) { 
+            const el = document.getElementById(`m-${id}`);
+            document.querySelectorAll('[id^="m-"]').forEach(m => m !== el && m.classList.add('hidden'));
+            el.classList.toggle('hidden'); 
         }
 
         async function router() {
@@ -152,83 +216,6 @@
                 const threads = await api();
                 renderBoard(threads || []);
             }
-        }
-
-        function getThumb(content) {
-            const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i;
-            const match = content.match(imgRegex);
-            return match ? `<div class="thumb-box"><img src="${match[0]}" class="thumb-img"></div>` : `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-800 font-black">TEXT</div>`;
-        }
-
-        function renderBoard(threads) {
-            document.getElementById('view-container').innerHTML = threads.map(t => `
-                <div class="relative glass p-4 rounded-[1.5rem] group flex gap-4 items-center">
-                    ${getThumb(t.replies[0].content)}
-                    <div onclick="window.location.hash = '#thread/${t.id}'" class="flex-1 min-w-0">
-                        <div class="flex items-center mb-1">
-                            ${t.sticky ? '<span class="sticky-tag">STICKY</span>' : ''}
-                            <h2 class="text-sm font-bold text-white uppercase truncate">${t.title}</h2>
-                        </div>
-                        <p class="text-slate-500 text-[11px] line-clamp-2 leading-relaxed">${t.replies[0].content}</p>
-                        <div class="mt-2 text-[8px] font-black uppercase text-slate-600 tracking-widest">${t.replies.length} REPLIES</div>
-                    </div>
-                    <div class="dot-menu-btn">
-                        <button onclick="toggleMenu('${t.id}')" class="p-2 opacity-20 hover:opacity-100"><i class="fa-solid fa-ellipsis-v"></i></button>
-                        <div id="m-${t.id}" class="hidden absolute right-0 mt-2 w-32 glass rounded-xl z-50 text-[8px] font-black uppercase border border-white/5">
-                            <button onclick="report('${t.id}')" class="w-full p-3 text-left hover:bg-white/5">Report</button>
-                            <button onclick="handleAction('sticky', '${t.id}')" class="w-full p-3 text-left hover:bg-white/5 accent-text">Sticky</button>
-                            <button onclick="handleAction('ban', '${t.id}')" class="w-full p-3 text-left hover:bg-white/5 text-red-500">Ban IP</button>
-                            <button onclick="handleAction('delete', '${t.id}')" class="w-full p-3 text-left hover:bg-white/5 text-red-900">Nuke</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderThread(t) {
-            document.getElementById('view-container').innerHTML = `
-                <button onclick="window.location.hash = ''" class="mb-6 text-[10px] font-black uppercase text-slate-600"><i class="fa-solid fa-arrow-left"></i> Back to Board</button>
-                <div class="space-y-4">
-                    ${t.replies.map((r, i) => `
-                        <div class="relative glass p-5 rounded-2xl ${i > 0 ? 'ml-4 sm:ml-10 border-l-2 border-orange-500/10' : ''}">
-                            <div class="flex justify-between items-center mb-3">
-                                <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full" style="background:#${r.hash}"></div><span class="text-[8px] font-black uppercase text-slate-500 italic">Anonymous</span></div>
-                                <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
-                                <div id="m-${r.id}" class="hidden absolute right-4 top-10 w-24 glass rounded-lg z-50 text-[8px] font-black uppercase border border-white/5">
-                                    <button onclick="handleAction('ban', '${t.id}', '${r.id}')" class="w-full p-3 text-left text-red-500">Ban IP</button>
-                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-3 text-left text-red-900">Delete</button>
-                                </div>
-                            </div>
-                            <div class="text-slate-300 text-[13px] leading-relaxed">${r.content.replace(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi, '<img src="$1" class="post-img" loading="lazy">')}</div>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="fixed bottom-6 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-4 rounded-xl text-white font-black uppercase shadow-2xl">Transmission</button></div>
-            `;
-        }
-
-        function toggleMenu(id) { 
-            const el = document.getElementById(`m-${id}`);
-            document.querySelectorAll('[id^="m-"]').forEach(m => m !== el && m.classList.add('hidden'));
-            el.classList.toggle('hidden'); 
-        }
-
-        function openModal() { 
-            genCaptcha();
-            document.getElementById('postModal').classList.remove('hidden'); 
-        }
-        function closeModal() { document.getElementById('postModal').classList.add('hidden'); }
-
-        async function submitPost() {
-            if(parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed!");
-            const h = window.location.hash;
-            const res = await api("", "POST", {
-                type: h ? 'reply' : 'thread',
-                threadId: h ? h.split('/')[1] : null,
-                title: document.getElementById('inpTitle').value || "Untitled",
-                content: document.getElementById('inpContent').value
-            });
-            if(res) { closeModal(); document.getElementById('inpContent').value = ''; router(); }
         }
 
         window.addEventListener('hashchange', router);
