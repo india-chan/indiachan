@@ -1,54 +1,78 @@
-<!-- ONLY showing changed parts. Everything else remains EXACTLY same -->
-
-<script>
-    // 🔐 SECURITY FIX: REMOVE EXPOSED KEYS
-    const WORKER_URL = 'https://anon-board.indiachan.workers.dev/';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IndiaChan | The Premier Indian Anonymous Imageboard</title>
     
-    // ❌ REMOVED:
-    // const AUTH_KEY = 'my-secret-key-123';
-    // const IMGBB_KEY = '6e999c06f4db58014ea5eaa09366eece';
-
-    let captchaAns = 0;
-
-    // 🛡️ SANITIZER (prevents XSS)
-    function sanitize(str) {
-        const div = document.createElement('div');
-        div.innerText = str;
-        return div.innerHTML;
-    }
-
-    // ⚡ SAFE API WRAPPER
-    async function api(path = "", method = "GET", body = null, headers = {}) {
-        try {
-            const res = await fetch(`${WORKER_URL}${path}`, {
-                method,
-                headers: { 
-                    'Content-Type': 'application/json',
-                    ...headers 
-                },
-                body: body ? JSON.stringify(body) : null
-            });
-            return res.ok ? await res.json() : null;
-        } catch (e) {
-            console.error("API error:", e);
-            return null;
+    <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately.">
+    <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { background: #05070a; color: #94a3b8; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        .glass { background: rgba(13, 17, 28, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-hover:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 153, 51, 0.3); transform: translateY(-3px); }
+        
+        .thread-number { 
+            position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d);
+            color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.5); z-index: 20; border: 1px solid rgba(255,255,255,0.3);
         }
-    }
 
-    // ⚡ SAFE IMAGE RENDER (lazy load added)
-    function safeRenderContent(content) {
-        const clean = sanitize(content);
-        return clean.replace(
-            /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi,
-            `<img loading="lazy" src="$1" class="post-img" onclick="window.open('$1')">`
-        );
-    }
+        .post-img { max-width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: zoom-in; }
+        .thumb-box { width: 85px; height: 85px; min-width: 85px; border-radius: 16px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); }
+        .thumb-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        
+        .accent-text { color: #ff9933; }
+        .accent-bg { background: #ff9933; }
+        .sticky-tag { background: #ff9933; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; }
+        
+        input, textarea { background: rgba(15, 23, 42, 0.7) !important; border: 1px solid rgba(255,255,255,0.05) !important; color: white !important; transition: all 0.3s; }
+        input:focus, textarea:focus { border-color: #ff9933 !important; outline: none; }
+    </style>
+</head>
+<body class="pb-32">
 
-    // 🔁 REPLACE ONLY THIS LINE inside renderThread():
-    // OLD:
-    // ${r.content.replace(...)}
+    <div id="ageWall" class="fixed inset-0 bg-[#05070a] z-[300] flex items-center justify-center p-6 text-center">
+        <div class="max-w-sm w-full">
+            <h1 class="text-6xl font-black text-white mb-2 italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
+            <p class="text-slate-500 mb-10 text-[10px] tracking-[0.3em] uppercase opacity-50 font-bold">18+ Only // Access Restricted</p>
+            <div class="bg-white/5 border border-white/10 p-6 rounded-3xl mb-8 text-[11px] leading-relaxed text-slate-400">
+                By entering, you confirm you are at least **18 years of age** and agree to abide by local laws. IndiaChan is not responsible for user-generated content.
+            </div>
+            <button onclick="acceptAge()" class="accent-bg w-full py-5 rounded-2xl text-white font-black tracking-widest hover:scale-105 transition-all shadow-lg">I AM 18+ / ENTER</button>
+        </div>
+    </div>
 
-    // NEW:
-    // ${safeRenderContent(r.content)}
+    <div class="max-w-2xl mx-auto px-4">
+        <header class="py-12 flex flex-col sm:flex-row justify-between items-center gap-6 text-center sm:text-left">
+            <h1 onclick="window.location.hash = ''" class="text-5xl font-black text-white cursor-pointer italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
+            <button onclick="openModal()" class="bg-white text-black px-8 py-3 rounded-full font-black text-[10px] tracking-widest uppercase shadow-2xl hover:bg-orange-500 hover:text-white transition-all w-full sm:w-auto">New Thread</button>
+        </header>
 
-</script>
+        <div id="view-container" class="space-y-6"></div>
+
+        <footer id="mainFooter" class="mt-20 py-10 border-t border-white/5 text-center">
+            <div class="flex justify-center gap-6 mb-8">
+                <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
+                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">Not Associated with Older/Other IndianChan or BharatChan</span>
+            </div>
+            <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">
+                IndiaChan is a law-abiding platform. All posts are user-generated. We do not endorse or take responsibility for content posted by third parties.
+            </p>
+            <div class="glass p-4 rounded-2xl inline-block border border-white/5">
+                <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
+                <a href="mailto:JefferyEpstienMossad@proton.me" class="text-[10px] font-black text-white hover:text-orange-500 transition-colors">JefferyEpstienMossad@proton.me</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- (rest of JS unchanged) -->
+</body>
+</html>
