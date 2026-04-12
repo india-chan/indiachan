@@ -33,7 +33,6 @@
         .accent-bg { background: #ff9933; }
         .sticky-tag { background: #ff9933; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; }
         
-        /* 4CHAN UI ELEMENTS */
         .greentext { color: #789922; font-weight: 500; }
         .anon-tag { color: #ff9933; font-weight: 900; background: rgba(255, 153, 51, 0.1); padding: 1px 4px; border-radius: 4px; cursor: pointer; }
         .anon-tag:hover { background: rgba(255, 153, 51, 0.2); text-decoration: underline; }
@@ -66,7 +65,7 @@
         <footer id="mainFooter" class="mt-20 py-10 border-t border-white/5 text-center">
             <div class="flex justify-center gap-6 mb-8">
                 <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
-                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">Not Associated with Other/Older IndiChan and BharatChan</span>
+                <span class="text-[10px] font-black uppercase text-orange-500 tracking-widest">Anonymous Indian Network</span>
             </div>
             <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">IndiaChan is a law-abiding platform. All posts are user-generated.</p>
             <div class="glass p-4 rounded-2xl inline-block border border-white/5">
@@ -111,6 +110,13 @@
             document.getElementById('inpCaptcha').value = '';
         }
 
+        // TIME FORMATTER
+        function formatTime(id) {
+            const date = new Date(parseInt(id));
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + 
+                   date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
         async function api(path = "", method = "GET", body = null, headers = {}) {
             const res = await fetch(`${WORKER_URL}${path}`, {
                 method, headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json', ...headers },
@@ -127,7 +133,6 @@
             if(data.success) { document.getElementById('inpContent').value += `\n${data.data.url}`; btn.innerText = "IMAGE ADDED"; }
         }
 
-        // 4CHAN LOGIC: Tagging and Greentext
         function insertTag(id) {
             openModal();
             const area = document.getElementById('inpContent');
@@ -181,7 +186,6 @@
 
         function renderBoard(threads) {
             document.getElementById('mainFooter').style.display = 'block';
-            // BUMP LOGIC: Sort by latest reply ID
             const sorted = threads.sort((a, b) => {
                 if (a.sticky && !b.sticky) return -1;
                 if (!a.sticky && b.sticky) return 1;
@@ -198,7 +202,10 @@
                             <h2 class="text-sm font-black text-white uppercase truncate tracking-tight">${t.title}</h2>
                         </div>
                         <p class="text-slate-500 text-[11px] line-clamp-2 opacity-80">${t.replies[0].content.replace(/<[^>]*>?/gm, '')}</p>
-                        <div class="mt-3 text-[9px] font-black text-slate-600 tracking-widest uppercase">${t.replies.length} REPLIES</div>
+                        <div class="mt-3 flex justify-between items-center pr-4">
+                            <span class="text-[9px] font-black text-slate-600 tracking-widest uppercase">${t.replies.length} REPLIES</span>
+                            <span class="text-[9px] font-bold text-slate-700">${formatTime(t.id)}</span>
+                        </div>
                     </div>
                     <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
                     <div id="m-${t.id}" class="hidden absolute right-6 top-16 w-36 glass rounded-2xl z-50 text-[9px] font-black uppercase border border-white/10 overflow-hidden">
@@ -219,9 +226,12 @@
                     ${t.replies.map((r, i) => `
                         <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12 border-l-2 border-white/5' : 'border-orange-500/20'}">
                             <div class="flex justify-between items-center mb-5">
-                                <div class="flex items-center gap-3 cursor-pointer" onclick="insertTag('${r.hash}')">
-                                    <div class="w-3 h-3 rounded-full" style="background:#${r.hash}"></div>
-                                    <span class="text-[10px] font-black text-slate-500 uppercase">Anon ID: ${r.hash}</span>
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 cursor-pointer" onclick="insertTag('${r.hash}')">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 rounded-full" style="background:#${r.hash}"></div>
+                                        <span class="text-[10px] font-black text-slate-500 uppercase">Anon ID: ${r.hash}</span>
+                                    </div>
+                                    <span class="text-[9px] font-bold text-slate-700 sm:border-l sm:border-white/10 sm:pl-3">${formatTime(r.id)}</span>
                                 </div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="hidden absolute right-8 top-12 w-28 glass rounded-2xl z-50 text-[9px] font-black uppercase overflow-hidden">
