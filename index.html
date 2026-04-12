@@ -110,11 +110,13 @@
             document.getElementById('inpCaptcha').value = '';
         }
 
-        // TIME FORMATTER
+        // IMPROVED TIME FORMATTER
         function formatTime(id) {
-            const date = new Date(parseInt(id));
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', ' + 
-                   date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const timestamp = parseInt(id);
+            if (isNaN(timestamp)) return "Recently";
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }) + ' ' + 
+                   date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
         }
 
         async function api(path = "", method = "GET", body = null, headers = {}) {
@@ -197,7 +199,7 @@
                     <div class="thread-number">#${i + 1}</div>
                     ${getThumb(t.replies[0].content)}
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center mb-1">
+                        <div class="flex items-center gap-3 mb-1">
                             ${t.sticky ? '<span class="sticky-tag">STICKY</span>' : ''}
                             <h2 class="text-sm font-black text-white uppercase truncate tracking-tight">${t.title}</h2>
                         </div>
@@ -226,12 +228,12 @@
                     ${t.replies.map((r, i) => `
                         <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12 border-l-2 border-white/5' : 'border-orange-500/20'}">
                             <div class="flex justify-between items-center mb-5">
-                                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 cursor-pointer" onclick="insertTag('${r.hash}')">
+                                <div class="flex flex-wrap items-center gap-3 cursor-pointer" onclick="insertTag('${r.hash}')">
                                     <div class="flex items-center gap-2">
                                         <div class="w-3 h-3 rounded-full" style="background:#${r.hash}"></div>
                                         <span class="text-[10px] font-black text-slate-500 uppercase">Anon ID: ${r.hash}</span>
                                     </div>
-                                    <span class="text-[9px] font-bold text-slate-700 sm:border-l sm:border-white/10 sm:pl-3">${formatTime(r.id)}</span>
+                                    <span class="text-[9px] font-bold text-slate-700 border-l border-white/10 pl-3">${formatTime(r.id)}</span>
                                 </div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="hidden absolute right-8 top-12 w-28 glass rounded-2xl z-50 text-[9px] font-black uppercase overflow-hidden">
