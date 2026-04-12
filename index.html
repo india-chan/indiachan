@@ -59,6 +59,7 @@
     </div>
 
     <script>
+        // DO NOT put a slash at the end of WORKER_URL
         const WORKER_URL = 'https://anon-board.indiachan.workers.dev'; 
         const AUTH_KEY = 'my-secret-key-123';
         let captchaAns = 0;
@@ -73,11 +74,23 @@
         }
 
         async function api(path = "", method = "GET", body = null, headers = {}) {
-            const res = await fetch(`${WORKER_URL}${path}`, {
-                method, headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json', ...headers },
-                body: body ? JSON.stringify(body) : null
-            });
-            return res.ok ? await res.json() : null;
+            // This logic ensures the URL always has exactly one slash between the domain and path
+            const cleanPath = path.startsWith('?') ? `/${path}` : (path ? `/${path}` : '/');
+            try {
+                const res = await fetch(`${WORKER_URL}${cleanPath}`, {
+                    method, 
+                    headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json', ...headers },
+                    body: body ? JSON.stringify(body) : null
+                });
+                if (!res.ok) {
+                    console.error("API Error:", res.status, await res.text());
+                    return null;
+                }
+                return await res.json();
+            } catch (e) {
+                console.error("Network Error:", e);
+                return null;
+            }
         }
 
         async function uploadToWorker(input) {
@@ -86,14 +99,13 @@
             const reader = new FileReader();
             reader.onloadend = async () => {
                 const base64 = reader.result.split(',')[1];
-                const res = await fetch(`${WORKER_URL}/upload-image`, {
-                    method: "POST",
-                    headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: base64 })
-                });
-                const data = await res.json();
-                if(data.success) { document.getElementById('inpContent').value += `\n${data.url}`; btn.innerText = "IMAGE ADDED"; }
-                else { btn.innerText = "FAILED"; }
+                const res = await api("upload-image", "POST", { image: base64 });
+                if(res && res.success) { 
+                    document.getElementById('inpContent').value += `\n${res.url}`; 
+                    btn.innerText = "IMAGE ADDED"; 
+                } else { 
+                    btn.innerText = "FAILED"; 
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -104,7 +116,11 @@
         }
 
         function renderBoard(threads) {
-            document.getElementById('view-container').innerHTML = (threads || []).map((t, i) => `
+            if (!threads || threads.length === 0) {
+                document.getElementById('view-container').innerHTML = '<p class="text-center py-20 text-slate-600 font-bold uppercase tracking-widest text-[10px]">No transmissions found.</p>';
+                return;
+            }
+            document.getElementById('view-container').innerHTML = threads.map((t, i) => `
                 <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
                     <div class="thread-number">#${i + 1}</div>
                     ${getThumb(t.replies[0].content)}
