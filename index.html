@@ -4,35 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IndiaChan | The Premier Indian Anonymous Imageboard</title>
-    
     <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately.">
     <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { background: #05070a; color: #94a3b8; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        
         .glass { background: rgba(13, 17, 28, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         .glass-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-hover:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 153, 51, 0.3); transform: translateY(-3px); }
-        
-        .thread-number { 
-            position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d);
-            color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px;
-            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.5); z-index: 20; border: 1px solid rgba(255,255,255,0.3);
-        }
-
+        .thread-number { position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d); color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(255, 153, 51, 0.5); z-index: 20; border: 1px solid rgba(255,255,255,0.3); }
         .post-img { max-width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: zoom-in; }
         .thumb-box { width: 85px; height: 85px; min-width: 85px; border-radius: 16px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); }
         .thumb-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-        
         .accent-text { color: #ff9933; }
         .accent-bg { background: #ff9933; }
         .sticky-tag { background: #ff9933; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; }
-        
         input, textarea { background: rgba(15, 23, 42, 0.7) !important; border: 1px solid rgba(255,255,255,0.05) !important; color: white !important; transition: all 0.3s; }
         input:focus, textarea:focus { border-color: #ff9933 !important; outline: none; }
     </style>
@@ -64,7 +52,7 @@
                 <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">Not Associated with Older/Other IndianChan or BharatChan</span>
             </div>
             <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">
-                IndiaChan is a law-abiding platform. All posts are user-generated. We do not endorse or take responsibility for content posted by third parties.
+                IndiaChan is a law-abiding platform. All posts are user-generated.
             </p>
             <div class="glass p-4 rounded-2xl inline-block border border-white/5">
                 <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
@@ -79,8 +67,8 @@
                 <span id="modalTitle" class="text-[11px] font-black accent-text uppercase tracking-widest">New Transmission</span>
                 <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
-            <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content... or paste Image link and it will be embedded (Max 500)" class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            <input id="inpTitle" type="text" maxlength="100" placeholder="Subject" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
+            <textarea id="inpContent" maxlength="500" placeholder="Content... Image links will be embedded" class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
             
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between">
@@ -95,9 +83,8 @@
     </div>
 
     <script>
-        const WORKER_URL = 'https://anon-board.indiachan.workers.dev/'; 
-        const AUTH_KEY = 'my-secret-key-123';
-        const IMGBB_KEY = '6e999c06f4db58014ea5eaa09366eece';
+        const WORKER_URL = 'https://anon-board.indiachan.workers.dev'; 
+        const CLIENT_KEY = 'my-secret-key-123'; // Must match AUTH_KEY in Worker Env
         let captchaAns = 0;
 
         function acceptAge() { localStorage.setItem('v3_age', 't'); document.getElementById('ageWall').remove(); }
@@ -111,7 +98,7 @@
 
         async function api(path = "", method = "GET", body = null, headers = {}) {
             const res = await fetch(`${WORKER_URL}${path}`, {
-                method, headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json', ...headers },
+                method, headers: { 'X-Anon-Key': CLIENT_KEY, 'Content-Type': 'application/json', ...headers },
                 body: body ? JSON.stringify(body) : null
             });
             return res.ok ? await res.json() : null;
@@ -119,10 +106,24 @@
 
         async function uploadToImgBB(input) {
             const btn = document.getElementById('uploadBtn'); btn.innerText = "UPLOADING...";
-            const fd = new FormData(); fd.append("image", input.files[0]);
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
-            const data = await res.json();
-            if(data.success) { document.getElementById('inpContent').value += `\n${data.data.url}`; btn.innerText = "IMAGE ADDED"; }
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const base64 = reader.result.split(',')[1];
+                const res = await fetch(`${WORKER_URL}/upload-image`, {
+                    method: "POST",
+                    headers: { 'X-Anon-Key': CLIENT_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64 })
+                });
+                const data = await res.json();
+                if(data.success) { 
+                    document.getElementById('inpContent').value += `\n${data.url}`; 
+                    btn.innerText = "IMAGE ADDED"; 
+                } else {
+                    btn.innerText = "FAILED";
+                }
+            };
+            reader.readAsDataURL(file);
         }
 
         function getThumb(content) {
@@ -132,10 +133,9 @@
         }
 
         async function handleReport(tId, rId = '') {
-            const reason = prompt("Reason for reporting:");
-            if(!reason) return;
+            const reason = prompt("Reason:"); if(!reason) return;
             const res = await api(`?id=${tId}`, "POST", { type: 'report', replyId: rId, reason: reason });
-            if(res) alert("Post reported to staff.");
+            if(res) alert("Reported.");
         }
 
         function renderBoard(threads) {
@@ -201,30 +201,17 @@
         async function submitPost() {
             const title = document.getElementById('inpTitle').value;
             const content = document.getElementById('inpContent').value;
-            
-            // LOGICAL CHARACTER LIMIT CHECK
-            if (title.length > 100) return alert("Title too long (Max 100)");
-            if (content.length > 500) return alert("Content too long (Max 500)");
-            if (content.length < 2) return alert("Content too short");
-            if (parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
-
+            if (content.length < 2 || parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Validation Failed");
             const hash = window.location.hash; const isReply = hash.startsWith('#thread/');
-            const res = await api("", "POST", {
-                type: isReply ? 'reply' : 'thread',
-                threadId: isReply ? hash.split('/')[1] : null,
-                title: title || "Anonymous",
-                content: content
-            });
+            const res = await api("", "POST", { type: isReply ? 'reply' : 'thread', threadId: isReply ? hash.split('/')[1] : null, title: title || "Anonymous", content: content });
             if(res) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
         }
 
         async function handleAction(type, tId, rId = null) {
-            const pass = prompt("Admin Password Required:"); if(!pass) return;
+            const pass = prompt("Admin Password:"); if(!pass) return;
             const headers = { 'X-Admin-Pass': pass };
             if(type === 'ban') headers['X-Action-Ban'] = 'true';
-            const method = type === 'sticky' ? 'PATCH' : 'DELETE';
-            const query = rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`;
-            await api(query, method, null, headers); router();
+            await api(rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`, type === 'sticky' ? 'PATCH' : 'DELETE', null, headers); router();
         }
 
         function toggleMenu(id) { 
