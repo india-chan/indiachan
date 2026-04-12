@@ -68,7 +68,7 @@
             </p>
             <div class="glass p-4 rounded-2xl inline-block border border-white/5">
                 <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
-                <a href="mailto:JefferyEpsteinMossad@proton.me" class="text-[10px] font-black text-white hover:text-orange-500 transition-colors">JefferyEpsteinMossad@proton.me</a>
+                <a href="mailto:JefferyEpstienMossad@proton.me" class="text-[10px] font-black text-white hover:text-orange-500 transition-colors">JefferyEpstienMossad@proton.me</a>
             </div>
         </footer>
     </div>
@@ -88,15 +88,16 @@
                     <input id="inpCaptcha" type="number" class="w-14 bg-transparent text-center border-b-2 border-orange-500 outline-none font-black text-white">
                 </div>
                 <button onclick="document.getElementById('imgInput').click()" id="uploadBtn" class="bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase text-slate-400">Add Image</button>
-                <input type="file" id="imgInput" class="hidden" accept="image/*" onchange="uploadToWorker(this)">
+                <input type="file" id="imgInput" class="hidden" accept="image/*" onchange="uploadToImgBB(this)">
             </div>
             <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-5 rounded-[1.5rem] text-white font-black uppercase tracking-widest hover:brightness-110 transition-all">Transmit Message</button>
         </div>
     </div>
 
     <script>
-        const WORKER_URL = 'https://anon-board.indiachan.workers.dev'; 
+        const WORKER_URL = 'https://anon-board.indiachan.workers.dev/'; 
         const AUTH_KEY = 'my-secret-key-123';
+        const IMGBB_KEY = '6e999c06f4db58014ea5eaa09366eece';
         let captchaAns = 0;
 
         function acceptAge() { localStorage.setItem('v3_age', 't'); document.getElementById('ageWall').remove(); }
@@ -116,27 +117,12 @@
             return res.ok ? await res.json() : null;
         }
 
-        // SECURE UPLOAD: Sends file to Worker instead of directly to ImgBB
-        async function uploadToWorker(input) {
+        async function uploadToImgBB(input) {
             const btn = document.getElementById('uploadBtn'); btn.innerText = "UPLOADING...";
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-                const base64 = reader.result.split(',')[1];
-                const res = await fetch(`${WORKER_URL}/upload-image`, {
-                    method: "POST",
-                    headers: { 'X-Anon-Key': AUTH_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: base64 })
-                });
-                const data = await res.json();
-                if(data.success) { 
-                    document.getElementById('inpContent').value += `\n${data.url}`; 
-                    btn.innerText = "IMAGE ADDED"; 
-                } else {
-                    btn.innerText = "FAILED";
-                }
-            };
-            reader.readAsDataURL(file);
+            const fd = new FormData(); fd.append("image", input.files[0]);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: fd });
+            const data = await res.json();
+            if(data.success) { document.getElementById('inpContent').value += `\n${data.data.url}`; btn.innerText = "IMAGE ADDED"; }
         }
 
         function getThumb(content) {
@@ -215,6 +201,8 @@
         async function submitPost() {
             const title = document.getElementById('inpTitle').value;
             const content = document.getElementById('inpContent').value;
+            
+            // LOGICAL CHARACTER LIMIT CHECK
             if (title.length > 100) return alert("Title too long (Max 100)");
             if (content.length > 500) return alert("Content too long (Max 500)");
             if (content.length < 2) return alert("Content too short");
