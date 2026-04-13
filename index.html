@@ -53,12 +53,11 @@
         <footer id="mainFooter" class="mt-20 py-10 border-t border-white/5 text-center">
             <div class="flex justify-center gap-6 mb-8">
                 <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
-                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">IndiaChan | https://india-chan.github.io/indiachan/</span>
+                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest text-wrap">IndiaChan | https://india-chan.github.io/indiachan/</span>
             </div>
             <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">IndiaChan is a law-abiding platform. All posts are user-generated. Not Associated with Older/Other IndianChan or BharatChan</p>
             <div class="glass p-4 rounded-2xl inline-block border border-white/5">
-                                <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
-
+                <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
                 <a href="mailto:JefferyEpstienMossad@proton.me" class="text-[10px] font-black text-white hover:text-orange-500 transition-colors">JefferyEpstienMossad@proton.me</a>
             </div>
         </footer>
@@ -101,6 +100,7 @@
             const options = { method, headers: { ...headers } };
             if (body) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
             const res = await fetch(url, options);
+            if (res.status === 403) { const data = await res.json(); alert(data.error || "Forbidden"); return null; }
             return res.ok ? await res.json() : null;
         }
 
@@ -133,9 +133,11 @@
                         <div class="mt-3 text-[9px] font-black text-slate-600 tracking-widest uppercase">${t.replies ? t.replies.length : 0} REPLIES</div>
                     </div>
                     <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
-                    <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-36 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden">
+                    <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
                         <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Sticky</button>
-                        <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-900">Admin: Delete</button>
+                        <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-400 border-b border-white/5">Admin: Delete</button>
+                        <button onclick="event.stopPropagation(); handleAction('nuke', null, null, '${t.replies[0].ip}')" class="w-full p-4 text-left text-red-600 bg-red-500/5 border-b border-white/5">Delete All from IP</button>
+                        <button onclick="event.stopPropagation(); handleAction('ban', null, null, '${t.replies[0].ip}')" class="w-full p-4 text-left text-red-900 bg-red-900/10">Ban User (30D)</button>
                     </div>
                 </div>
             `).join('');
@@ -157,9 +159,10 @@
                                     <span onclick="quoteReply('${userId}')" class="text-[10px] font-black text-slate-500 uppercase clickable-id">ID: ${userId}</span>
                                 </div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
-                                <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-40 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden">
-                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-400">Delete Post</button>
-                                    <button onclick="handleAction('nuke', null, null, '${r.ip}')" class="w-full p-4 text-left text-red-900 bg-red-500/10">Admin: Nuke IP</button>
+                                <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
+                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-white/60 hover:bg-white/5 border-b border-white/5">Delete Post</button>
+                                    <button onclick="handleAction('nuke', null, null, '${r.ip}')" class="w-full p-4 text-left text-red-500 bg-red-500/5 border-b border-white/5">Delete All from IP</button>
+                                    <button onclick="handleAction('ban', null, null, '${r.ip}')" class="w-full p-4 text-left text-red-900 bg-red-900/10">Ban User (30D)</button>
                                 </div>
                             </div>
                             <div class="text-slate-200 text-[14px] leading-relaxed whitespace-pre-wrap">${formatContent(r.content)}</div>
@@ -207,11 +210,24 @@
 
         async function handleAction(type, tId, rId = null, targetIp = null) {
             const pass = prompt("Admin Password Required:"); if(!pass) return;
-            let query = type === 'nuke' ? `?nukeIp=${targetIp}` : (rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`);
-            let method = type === 'sticky' ? 'PATCH' : 'DELETE';
-            const res = await api(query, method, type === 'sticky' ? { action: 'sticky' } : null, { 'X-Admin-Pass': pass });
-            if (res && res.success) {
-                if (!rId && type === 'delete' && window.location.hash.includes(tId)) window.location.hash = '';
+            const headers = { 'X-Admin-Pass': pass };
+            let res;
+
+            if (type === 'ban') {
+                if(!confirm(`Ban IP: ${targetIp} for 30 days?`)) return;
+                res = await api("", "POST", { action: 'ban', targetIp: targetIp }, headers);
+            } else if (type === 'nuke') {
+                if(!confirm(`DELETE ALL posts from IP: ${targetIp}?`)) return;
+                res = await api(`?nukeIp=${targetIp}`, "DELETE", null, headers);
+            } else if (type === 'sticky') {
+                res = await api(`?id=${tId}`, "PATCH", { action: 'sticky' }, headers);
+            } else {
+                let query = rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`;
+                res = await api(query, "DELETE", null, headers);
+            }
+
+            if (res && (res.success || !res.error)) {
+                if (type === 'delete' && !rId && window.location.hash.includes(tId)) window.location.hash = '';
                 else router();
             }
         }
@@ -219,7 +235,7 @@
         function toggleMenu(id) { 
             const el = document.getElementById(`m-${id}`);
             const parent = el.closest('.glass');
-            document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) { m.classList.add('hidden'); m.closest('.glass').style.zIndex = "1"; } });
+            document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) { m.classList.add('hidden'); if(m.closest('.glass')) m.closest('.glass').style.zIndex = "1"; } });
             const isOpening = el.classList.contains('hidden');
             el.classList.toggle('hidden'); 
             if (parent) parent.style.zIndex = isOpening ? "100" : "1";
