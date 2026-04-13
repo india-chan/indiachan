@@ -138,8 +138,8 @@
                     <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
                         <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Sticky</button>
                         <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-400 border-b border-white/5">Admin: Delete</button>
-                        <button onclick="event.stopPropagation(); handleAction('nuke', null, null, '${t.replies[0].ip}')" class="w-full p-4 text-left text-red-600 bg-red-500/5 border-b border-white/5">Delete All from IP</button>
-                        <button onclick="event.stopPropagation(); handleAction('ban', null, null, '${t.replies[0].ip}')" class="w-full p-4 text-left text-red-900 bg-red-900/10">Ban User (30D)</button>
+                        <button onclick="event.stopPropagation(); handleAction('nuke', null, null, '${t.replies && t.replies[0] ? t.replies[0].ip : ''}')" class="w-full p-4 text-left text-red-600 bg-red-500/5 border-b border-white/5">Delete All from IP</button>
+                        <button onclick="event.stopPropagation(); handleAction('ban', null, null, '${t.replies && t.replies[0] ? t.replies[0].ip : ''}')" class="w-full p-4 text-left text-red-900 bg-red-900/10">Ban User (30D)</button>
                     </div>
                 </div>
             `).join('');
@@ -237,9 +237,19 @@
         function toggleMenu(id) { 
             const el = document.getElementById(`m-${id}`);
             const parent = el.closest('.glass');
-            document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) { m.classList.add('hidden'); if(m.closest('.glass')) m.closest('.glass').style.zIndex = "1"; } });
+            
+            // Close other menus and reset their parent's z-index
+            document.querySelectorAll('[id^="m-"]').forEach(m => { 
+                if(m !== el) { 
+                    m.classList.add('hidden'); 
+                    if(m.closest('.glass')) m.closest('.glass').style.zIndex = "1"; 
+                } 
+            });
+
             const isOpening = el.classList.contains('hidden');
             el.classList.toggle('hidden'); 
+            
+            // Bring current parent to front when menu is open to prevent overlap from threads below
             if (parent) parent.style.zIndex = isOpening ? "100" : "1";
         }
 
