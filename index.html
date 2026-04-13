@@ -25,7 +25,18 @@
             box-shadow: 0 4px 15px rgba(255, 153, 51, 0.5); z-index: 20; border: 1px solid rgba(255,255,255,0.3);
         }
 
-        .post-img { max-width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: zoom-in; }
+        /* Prevents large images from covering the whole board */
+        .post-img { 
+            max-width: 100%; 
+            max-height: 450px; 
+            object-fit: contain;
+            border-radius: 12px; 
+            margin-top: 12px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            cursor: zoom-in; 
+            display: block;
+        }
+
         .thumb-box { width: 85px; height: 85px; min-width: 85px; border-radius: 16px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); }
         .thumb-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
         
@@ -79,17 +90,21 @@
                 <span id="modalTitle" class="text-[11px] font-black accent-text uppercase tracking-widest">New Transmission</span>
                 <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
-            <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content... (Max 500)" class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
             
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between">
-                    <span id="captchaTxt" class="text-[10px] font-black text-slate-500 uppercase"></span>
-                    <input id="inpCaptcha" type="number" class="w-14 bg-transparent text-center border-b-2 border-orange-500 outline-none font-black text-white">
-                </div>
-                <button onclick="document.getElementById('imgInput').click()" id="uploadBtn" class="bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase text-slate-400">Add Image</button>
-                <input type="file" id="imgInput" class="hidden" accept="image/*" onchange="updateUploadStatus(this)">
+            <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
+            <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content..." class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            
+            <div class="mb-4">
+                <p class="text-[9px] font-bold text-slate-500 uppercase mb-2">Image Link (JPG/PNG/GIF)</p>
+                <input id="inpImageLink" type="url" placeholder="Paste image URL here..." class="w-full p-4 rounded-xl text-xs font-bold mb-2">
+                <a href="https://imgbb.com/upload" target="_blank" class="text-[9px] accent-text font-black uppercase hover:underline">Upload to ImgBB first & paste direct link</a>
             </div>
+
+            <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between mb-8">
+                <span id="captchaTxt" class="text-[10px] font-black text-slate-500 uppercase"></span>
+                <input id="inpCaptcha" type="number" class="w-14 bg-transparent text-center border-b-2 border-orange-500 outline-none font-black text-white">
+            </div>
+
             <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-5 rounded-[1.5rem] text-white font-black uppercase tracking-widest hover:brightness-110 transition-all">Transmit Message</button>
         </div>
     </div>
@@ -97,7 +112,6 @@
     <script>
         const WORKER_URL = 'https://indiachan.indiachan.workers.dev/'; 
         let captchaAns = 0;
-        let selectedFile = null;
 
         function acceptAge() { localStorage.setItem('v3_age', 't'); document.getElementById('ageWall').remove(); }
         if(localStorage.getItem('v3_age')) document.getElementById('ageWall').remove();
@@ -110,9 +124,7 @@
 
         async function api(path = "", method = "GET", body = null, headers = {}) {
             const options = { method, headers: { ...headers } };
-            if (body instanceof FormData) {
-                options.body = body;
-            } else if (body) {
+            if (body) {
                 options.headers['Content-Type'] = 'application/json';
                 options.body = JSON.stringify(body);
             }
@@ -120,25 +132,15 @@
             return res.ok ? await res.json() : null;
         }
 
-        function updateUploadStatus(input) {
-            if (input.files[0]) {
-                selectedFile = input.files[0];
-                document.getElementById('uploadBtn').innerText = "IMAGE ATTACHED";
-                document.getElementById('uploadBtn').classList.add('accent-text');
-            }
-        }
-
         function getThumb(reply) {
-            const imgMatch = reply.content.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i);
-            const thumbUrl = reply.image || (imgMatch ? imgMatch[0] : null);
-            
+            // Priority: Explicit image link field > text content matches
+            const thumbUrl = reply.image || reply.content.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i)?.[0];
             return thumbUrl ? `<div class="thumb-box"><img src="${thumbUrl}" class="thumb-img"></div>` : 
-                               `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">TXT</div>`;
+                             `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">TXT</div>`;
         }
 
         async function handleReport(tId, rId = '') {
-            const reason = prompt("Reason for reporting:");
-            if(!reason) return;
+            prompt("Reason for reporting:");
             alert("Report submitted for review.");
         }
 
@@ -192,9 +194,10 @@
         }
 
         function formatContent(text) {
-            // Highlight quotes and auto-embed existing image links in text
             let formatted = text.replace(/>>>(\d+)/g, '<span class="accent-text">>>>$1</span>');
-            return formatted.replace(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi, '<img src="$1" class="post-img">');
+            // Greentext support
+            formatted = formatted.split('\n').map(l => l.startsWith('>') && !l.startsWith('>>>') ? `<span class="text-green-500">${l}</span>` : l).join('\n');
+            return formatted;
         }
 
         function openModal() {
@@ -207,31 +210,31 @@
 
         function closeModal() { 
             document.getElementById('postModal').classList.add('hidden');
-            selectedFile = null;
-            document.getElementById('uploadBtn').innerText = "ADD IMAGE";
-            document.getElementById('uploadBtn').classList.remove('accent-text');
+            document.getElementById('inpImageLink').value = '';
         }
 
         async function submitPost() {
             const title = document.getElementById('inpTitle').value;
             const content = document.getElementById('inpContent').value;
+            const imgUrl = document.getElementById('inpImageLink').value;
+            
             if (parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
-            if (!content && !selectedFile) return alert("Content required.");
+            if (!content) return alert("Content required.");
 
             const hash = window.location.hash; const isReply = hash.startsWith('#thread/');
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "TRANSMITTING...";
 
-            // Use FormData to send both text and file to the Worker
-            const fd = new FormData();
-            fd.append("type", isReply ? 'reply' : 'thread');
-            if (isReply) fd.append("threadId", hash.split('/')[1]);
-            fd.append("title", title || "Anonymous");
-            fd.append("content", content);
-            if (selectedFile) fd.append("image", selectedFile);
+            const payload = {
+                type: isReply ? 'reply' : 'thread',
+                threadId: isReply ? hash.split('/')[1] : null,
+                title: title || "Anonymous",
+                content: content,
+                image: imgUrl || "" // Send the link directly
+            };
 
-            const res = await fetch(WORKER_URL, { method: "POST", body: fd });
-            if(res.ok) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
+            const res = await api("", "POST", payload);
+            if(res) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
             else { alert("Transmission failed."); }
             btn.disabled = false;
         }
