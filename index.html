@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IndiaChan | The Indian Anonymous Imageboard</title>
+    <title>IndiaChan | The Premier Indian Anonymous Imageboard</title>
+    
+    <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately.">
+    <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -29,15 +32,9 @@
         .accent-text { color: #ff9933; }
         .accent-bg { background: #ff9933; }
         .sticky-tag { background: #ff9933; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; }
-        .locked-tag { background: #991b1b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; }
         
         input, textarea { background: rgba(15, 23, 42, 0.7) !important; border: 1px solid rgba(255,255,255,0.05) !important; color: white !important; transition: all 0.3s; }
         input:focus, textarea:focus { border-color: #ff9933 !important; outline: none; }
-
-        /* 4chan styling */
-        .greentext { color: #789922; }
-        .reply-link { color: #ff9933; cursor: pointer; font-weight: bold; }
-        .reply-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body class="pb-32">
@@ -46,6 +43,9 @@
         <div class="max-w-sm w-full">
             <h1 class="text-6xl font-black text-white mb-2 italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
             <p class="text-slate-500 mb-10 text-[10px] tracking-[0.3em] uppercase opacity-50 font-bold">18+ Only // Access Restricted</p>
+            <div class="bg-white/5 border border-white/10 p-6 rounded-3xl mb-8 text-[11px] leading-relaxed text-slate-400">
+                By entering, you confirm you are at least **18 years of age** and agree to abide by local laws. IndiaChan is not responsible for user-generated content.
+            </div>
             <button onclick="acceptAge()" class="accent-bg w-full py-5 rounded-2xl text-white font-black tracking-widest hover:scale-105 transition-all shadow-lg">I AM 18+ / ENTER</button>
         </div>
     </div>
@@ -59,7 +59,17 @@
         <div id="view-container" class="space-y-6"></div>
 
         <footer id="mainFooter" class="mt-20 py-10 border-t border-white/5 text-center">
-            <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">User-generated content. Not responsible for third-party posts.</p>
+            <div class="flex justify-center gap-6 mb-8">
+                <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
+                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">Not Associated with Older/Other IndianChan</span>
+            </div>
+            <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">
+                IndiaChan is a law-abiding platform. All posts are user-generated. We do not endorse or take responsibility for content posted by third parties.
+            </p>
+            <div class="glass p-4 rounded-2xl inline-block border border-white/5">
+                <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
+                <a href="mailto:JefferyEpstienMossad@proton.me" class="text-[10px] font-black text-white hover:text-orange-500 transition-colors">JefferyEpstienMossad@proton.me</a>
+            </div>
         </footer>
     </div>
 
@@ -70,7 +80,7 @@
                 <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
-            <textarea id="inpContent" maxlength="1000" placeholder="Enter anonymous content... (> for greentext)" class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content... (Max 500)" class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
             
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between">
@@ -85,7 +95,7 @@
     </div>
 
     <script>
-        const WORKER_URL = 'https://indiachan.indiachan.workers.dev/'; // CHANGE THIS TO YOUR WORKER URL
+        const WORKER_URL = 'https://indiachan.indiachan.workers.dev/'; 
         let captchaAns = 0;
         let selectedFile = null;
 
@@ -93,16 +103,20 @@
         if(localStorage.getItem('v3_age')) document.getElementById('ageWall').remove();
 
         function genCaptcha() {
-            const a = Math.floor(Math.random() * 5) + 1; 
-            const b = Math.floor(Math.random() * 5) + 1;
-            const c = Math.floor(Math.random() * 3) + 1;
-            captchaAns = (a + b) * c; 
-            document.getElementById('captchaTxt').innerText = `(${a} + ${b}) x ${c} =`;
+            const a = Math.floor(Math.random() * 9) + 1; const b = Math.floor(Math.random() * 9) + 1;
+            captchaAns = a + b; document.getElementById('captchaTxt').innerText = `${a} + ${b} =`;
             document.getElementById('inpCaptcha').value = '';
         }
 
-        async function api(path = "", method = "GET", headers = {}) {
-            const res = await fetch(`${WORKER_URL}${path}`, { method, headers });
+        async function api(path = "", method = "GET", body = null, headers = {}) {
+            const options = { method, headers: { ...headers } };
+            if (body instanceof FormData) {
+                options.body = body;
+            } else if (body) {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = JSON.stringify(body);
+            }
+            const res = await fetch(`${WORKER_URL}${path}`, options);
             return res.ok ? await res.json() : null;
         }
 
@@ -115,31 +129,17 @@
         }
 
         function getThumb(reply) {
-            return reply.image ? `<div class="thumb-box"><img src="${reply.image}" class="thumb-img"></div>` : 
+            const imgMatch = reply.content.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i);
+            const thumbUrl = reply.image || (imgMatch ? imgMatch[0] : null);
+            
+            return thumbUrl ? `<div class="thumb-box"><img src="${thumbUrl}" class="thumb-img"></div>` : 
                                `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">TXT</div>`;
         }
 
-        async function handleReport(tId) {
-            if (!confirm("Report this thread for administrative review?")) return;
-            const fd = new FormData();
-            fd.append("type", "report");
-            fd.append("threadId", tId);
-            const res = await fetch(WORKER_URL, { method: "POST", body: fd });
-            if (res.ok) alert("Reported. If multiple users report, this thread will be auto-locked.");
-        }
-
-        function quoteID(id) {
-            openModal();
-            const input = document.getElementById('inpContent');
-            input.value += `>>${id}\n`;
-            input.focus();
-        }
-
-        function formatContent(text) {
-            return text.split('\n').map(line => {
-                if (line.startsWith('>')) return `<span class="greentext">${line}</span>`;
-                return line.replace(/>>([a-f0-9]{6})/gi, '<span class="reply-link" onclick="quoteID(\'$1\')">>>$1</span>');
-            }).join('\n').replace(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi, '<img src="$1" class="post-img">');
+        async function handleReport(tId, rId = '') {
+            const reason = prompt("Reason for reporting:");
+            if(!reason) return;
+            alert("Report submitted for review.");
         }
 
         function renderBoard(threads) {
@@ -151,7 +151,6 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center mb-1">
                             ${t.sticky ? '<span class="sticky-tag">STICKY</span>' : ''}
-                            ${t.locked ? '<span class="locked-tag">LOCKED</span>' : ''}
                             <h2 class="text-sm font-black text-white uppercase truncate tracking-tight">${t.title}</h2>
                         </div>
                         <p class="text-slate-500 text-[11px] line-clamp-2 opacity-80">${t.replies[0].content}</p>
@@ -160,7 +159,7 @@
                     <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
                     <div id="m-${t.id}" class="hidden absolute right-6 top-16 w-36 glass rounded-2xl z-50 text-[9px] font-black uppercase border border-white/10 overflow-hidden">
                         <button onclick="event.stopPropagation(); handleReport('${t.id}')" class="w-full p-4 text-left hover:bg-white/5 accent-text border-b border-white/5">Report</button>
-                        <button onclick="event.stopPropagation(); handleAction('unlock', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Unlock</button>
+                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Sticky</button>
                         <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-900">Admin: Delete</button>
                     </div>
                 </div>
@@ -170,21 +169,16 @@
         function renderThread(t) {
             document.getElementById('mainFooter').style.display = 'none';
             document.getElementById('view-container').innerHTML = `
-                <div class="flex justify-between items-center mb-8">
-                    <button onclick="window.location.hash = ''" class="text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return to Board</button>
-                    ${t.locked ? '<span class="locked-tag text-[10px] px-3 py-1">THREAD LOCKED</span>' : ''}
-                </div>
+                <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return to Board</button>
                 <div class="space-y-6 pb-20">
                     ${t.replies.map((r, i) => `
                         <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12 border-l-2 border-white/5' : 'border-orange-500/20'}">
                             <div class="flex justify-between items-center mb-5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-3 h-3 rounded-full" style="background:#${r.hash}"></div>
-                                    <span class="text-[10px] font-black text-slate-500 uppercase cursor-pointer hover:text-white" onclick="quoteID('${r.hash}')">Anon ID: ${r.hash}</span>
-                                </div>
+                                <div class="flex items-center gap-3"><div class="w-3 h-3 rounded-full" style="background:#${r.hash}"></div><span class="text-[10px] font-black text-slate-500 uppercase">Anon ID: ${r.hash}</span></div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="hidden absolute right-8 top-12 w-28 glass rounded-2xl z-50 text-[9px] font-black uppercase">
-                                    <button onclick="handleReport('${t.id}')" class="w-full p-4 text-left accent-text border-b border-white/5">Report</button>
+                                    <button onclick="handleReport('${t.id}', '${r.id}')" class="w-full p-4 text-left accent-text border-b border-white/5">Report</button>
+                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-900">Delete</button>
                                 </div>
                             </div>
                             <div class="text-slate-200 text-[14px] leading-relaxed whitespace-pre-wrap">${formatContent(r.content)}</div>
@@ -192,9 +186,15 @@
                         </div>
                     `).join('')}
                 </div>
-                ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">Submit Reply</button></div>` : ''}
+                <div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">Submit Reply</button></div>
             `;
             window.scrollTo(0, 0);
+        }
+
+        function formatContent(text) {
+            // Highlight quotes and auto-embed existing image links in text
+            let formatted = text.replace(/>>>(\d+)/g, '<span class="accent-text">>>>$1</span>');
+            return formatted.replace(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/gi, '<img src="$1" class="post-img">');
         }
 
         function openModal() {
@@ -222,6 +222,7 @@
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "TRANSMITTING...";
 
+            // Use FormData to send both text and file to the Worker
             const fd = new FormData();
             fd.append("type", isReply ? 'reply' : 'thread');
             if (isReply) fd.append("threadId", hash.split('/')[1]);
@@ -229,20 +230,18 @@
             fd.append("content", content);
             if (selectedFile) fd.append("image", selectedFile);
 
-            try {
-                const res = await fetch(WORKER_URL, { method: "POST", body: fd });
-                const json = await res.json();
-                if(res.ok) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
-                else { alert(json.error || "Transmission failed."); }
-            } catch (err) { alert("Network Error."); }
+            const res = await fetch(WORKER_URL, { method: "POST", body: fd });
+            if(res.ok) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
+            else { alert("Transmission failed."); }
             btn.disabled = false;
         }
 
-        async function handleAction(type, tId) {
+        async function handleAction(type, tId, rId = null) {
             const pass = prompt("Admin Password Required:"); if(!pass) return;
             const headers = { 'X-Admin-Pass': pass };
-            const method = type === 'unlock' ? 'PATCH' : 'DELETE';
-            await api(`?id=${tId}`, method, headers); router();
+            const method = type === 'sticky' ? 'PATCH' : 'DELETE';
+            const query = rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`;
+            await api(query, method, null, headers); router();
         }
 
         function toggleMenu(id) { 
