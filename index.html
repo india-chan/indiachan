@@ -5,56 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IndiaChan | The Premier Indian Anonymous Imageboard</title>
     
-    <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately.">
-    <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { background: #05070a; color: #94a3b8; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        
         .glass { background: rgba(13, 17, 28, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); position: relative; }
         .glass-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-hover:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 153, 51, 0.3); transform: translateY(-3px); }
-        
-        .thread-number { 
-            position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d);
-            color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px;
-            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.5); z-index: 20; border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .post-img { 
-            max-width: 100%; 
-            max-height: 450px; 
-            object-fit: contain;
-            border-radius: 12px; 
-            margin-top: 12px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            cursor: zoom-in; 
-            display: block;
-        }
-
+        .thread-number { position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d); color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(255, 153, 51, 0.5); z-index: 20; border: 1px solid rgba(255,255,255,0.3); }
+        .post-img { max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: zoom-in; display: block; }
         .thumb-box { width: 85px; height: 85px; min-width: 85px; border-radius: 16px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); }
         .thumb-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-        
         .accent-text { color: #ff9933; }
         .accent-bg { background: #ff9933; }
         .sticky-tag { background: #ff9933; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; }
-        
         input, textarea { background: rgba(15, 23, 42, 0.7) !important; border: 1px solid rgba(255,255,255,0.05) !important; color: white !important; transition: all 0.3s; }
         input:focus, textarea:focus { border-color: #ff9933 !important; outline: none; }
-
         .clickable-id { cursor: pointer; transition: color 0.2s; }
         .clickable-id:hover { color: #ff9933; text-decoration: underline; }
-        .flag-icon { width: 16px; height: 11px; border-radius: 2px; object-fit: cover; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-
-        /* FIX: Dropdown Menu Layering */
-        .admin-menu {
-            z-index: 100 !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
+        .flag-icon { width: 18px; height: 12px; border-radius: 2px; object-fit: cover; display: inline-block; vertical-align: middle; }
+        .admin-menu { z-index: 100 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
     </style>
 </head>
 <body class="pb-32">
@@ -64,7 +36,7 @@
             <h1 class="text-6xl font-black text-white mb-2 italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
             <p class="text-slate-500 mb-10 text-[10px] tracking-[0.3em] uppercase opacity-50 font-bold">18+ Only // Access Restricted</p>
             <div class="bg-white/5 border border-white/10 p-6 rounded-3xl mb-8 text-[11px] leading-relaxed text-slate-400">
-                By entering, you confirm you are at least **18 years of age** and agree to abide by local laws. IndiaChan is not responsible for user-generated content.
+                By entering, you confirm you are at least **18 years of age** and agree to abide by local laws. 
             </div>
             <button onclick="acceptAge()" class="accent-bg w-full py-5 rounded-2xl text-white font-black tracking-widest hover:scale-105 transition-all shadow-lg">I AM 18+ / ENTER</button>
         </div>
@@ -81,13 +53,10 @@
         <footer id="mainFooter" class="mt-20 py-10 border-t border-white/5 text-center">
             <div class="flex justify-center gap-6 mb-8">
                 <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
-                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">Not Associated with Older/Other IndianChan</span>
+                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">IndiaChan</span>
             </div>
-            <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">
-                IndiaChan is a law-abiding platform. All posts are user-generated.
-            </p>
+            <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">IndiaChan is a law-abiding platform. All posts are user-generated.</p>
             <div class="glass p-4 rounded-2xl inline-block border border-white/5">
-                <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
                 <a href="mailto:JefferyEpstienMossad@proton.me" class="text-[10px] font-black text-white hover:text-orange-500 transition-colors">JefferyEpstienMossad@proton.me</a>
             </div>
         </footer>
@@ -99,21 +68,15 @@
                 <span id="modalTitle" class="text-[11px] font-black accent-text uppercase tracking-widest">New Transmission</span>
                 <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            
             <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
             <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content..." class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
-            
             <div class="mb-4">
-                <p class="text-[9px] font-bold text-slate-500 uppercase mb-2">Image Link (JPG/PNG/GIF)</p>
                 <input id="inpImageLink" type="url" placeholder="Paste image URL here..." class="w-full p-4 rounded-xl text-xs font-bold mb-2">
-                <a href="https://imgbb.com/upload" target="_blank" class="text-[9px] accent-text font-black uppercase hover:underline">Upload to ImgBB first & paste direct link</a>
             </div>
-
             <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between mb-8">
                 <span id="captchaTxt" class="text-[10px] font-black text-slate-500 uppercase"></span>
                 <input id="inpCaptcha" type="number" class="w-14 bg-transparent text-center border-b-2 border-orange-500 outline-none font-black text-white">
             </div>
-
             <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-5 rounded-[1.5rem] text-white font-black uppercase tracking-widest hover:brightness-110 transition-all">Transmit Message</button>
         </div>
     </div>
@@ -134,10 +97,7 @@
         async function api(path = "", method = "GET", body = null, headers = {}) {
             const url = path.includes('?') ? `${WORKER_URL}${path}&t=${Date.now()}` : `${WORKER_URL}${path}?t=${Date.now()}`;
             const options = { method, headers: { ...headers } };
-            if (body) {
-                options.headers['Content-Type'] = 'application/json';
-                options.body = JSON.stringify(body);
-            }
+            if (body) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
             const res = await fetch(url, options);
             return res.ok ? await res.json() : null;
         }
@@ -145,8 +105,7 @@
         function getThumb(reply) {
             if (!reply) return `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">EMPTY</div>`;
             const thumbUrl = reply.image || reply.content?.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|avif))/i)?.[0];
-            return thumbUrl ? `<div class="thumb-box"><img src="${thumbUrl}" class="thumb-img" onerror="this.src='https://placehold.co/85x85?text=IMG'"></div>` : 
-                               `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">TXT</div>`;
+            return thumbUrl ? `<div class="thumb-box"><img src="${thumbUrl}" class="thumb-img" onerror="this.src='https://placehold.co/85x85?text=IMG'"></div>` : `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">TXT</div>`;
         }
 
         function quoteReply(id) {
@@ -155,11 +114,6 @@
             const quote = `>>${id}\n`;
             textarea.value = textarea.value ? textarea.value + '\n' + quote : quote;
             textarea.focus();
-        }
-
-        async function handleReport(tId, rId = '') {
-            prompt("Reason for reporting:");
-            alert("Report submitted for review.");
         }
 
         function renderBoard(threads) {
@@ -178,7 +132,6 @@
                     </div>
                     <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
                     <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-36 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden">
-                        <button onclick="event.stopPropagation(); handleReport('${t.id}')" class="w-full p-4 text-left hover:bg-white/5 accent-text border-b border-white/5">Report</button>
                         <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Sticky</button>
                         <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-900">Admin: Delete</button>
                     </div>
@@ -191,24 +144,26 @@
             document.getElementById('view-container').innerHTML = `
                 <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return to Board</button>
                 <div class="space-y-6 pb-20">
-                    ${t.replies.map((r, i) => `
+                    ${t.replies.map((r, i) => {
+                        const country = (r.country || 'un').toLowerCase();
+                        const userId = r.userId || (r.hash ? r.hash.substring(0,8) : '????????');
+                        return `
                         <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12 border-l-2 border-white/5' : 'border-orange-500/20'}">
                             <div class="flex justify-between items-center mb-5">
                                 <div class="flex items-center gap-3">
-                                    <img src="https://flagcdn.com/w20/${(r.country || 'un').toLowerCase()}.png" class="flag-icon" title="${r.country || 'Unknown'}">
-                                    <span onclick="quoteReply('${r.userId}')" class="text-[10px] font-black text-slate-500 uppercase clickable-id">ID: ${r.userId || '????'}</span>
+                                    <img src="https://flagcdn.com/w20/${country}.png" class="flag-icon" onerror="this.src='https://flagcdn.com/w20/un.png'">
+                                    <span onclick="quoteReply('${userId}')" class="text-[10px] font-black text-slate-500 uppercase clickable-id">ID: ${userId}</span>
                                 </div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-40 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden">
-                                    <button onclick="handleReport('${t.id}', '${r.id}')" class="w-full p-4 text-left accent-text border-b border-white/5">Report</button>
-                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left border-b border-white/5 text-red-400">Delete Post</button>
+                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-400">Delete Post</button>
                                     <button onclick="handleAction('nuke', null, null, '${r.ip}')" class="w-full p-4 text-left text-red-900 bg-red-500/10">Admin: Nuke IP</button>
                                 </div>
                             </div>
                             <div class="text-slate-200 text-[14px] leading-relaxed whitespace-pre-wrap">${formatContent(r.content)}</div>
                             ${r.image ? `<img src="${r.image}" class="post-img" onclick="window.open('${r.image}')" onerror="this.style.display='none'">` : ''}
-                        </div>
-                    `).join('')}
+                        </div>`;
+                    }).join('')}
                 </div>
                 <div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">Submit Reply</button></div>
             `;
@@ -222,9 +177,7 @@
                 const trimmed = l.trim();
                 return (trimmed.startsWith('>') && !trimmed.startsWith('>>')) ? `<span class="text-green-500 font-medium">${l}</span>` : l;
             }).join('\n');
-            return formatted.replace(/(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif|webp|avif)|https?:\/\/i\.ibb\.co\/[^\s]+)/gi, (match) => {
-                return `<img src="${match}" class="post-img" onerror="this.style.display='none'">`;
-            });
+            return formatted.replace(/(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif|webp|avif)|https?:\/\/i\.ibb\.co\/[^\s]+)/gi, (match) => `<img src="${match}" class="post-img" onerror="this.style.display='none'">`);
         }
 
         function openModal() {
@@ -241,87 +194,39 @@
             const title = document.getElementById('inpTitle').value;
             const content = document.getElementById('inpContent').value;
             const imgUrl = document.getElementById('inpImageLink').value.trim();
-            
             if (parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
-            if (!content && !imgUrl) return alert("Content or Image required.");
-
             const hash = window.location.hash; const isReply = hash.startsWith('#thread/');
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "TRANSMITTING...";
-
-            const payload = {
-                type: isReply ? 'reply' : 'thread',
-                threadId: isReply ? hash.split('/')[1] : null,
-                title: title || "Anonymous",
-                content: content,
-                image: imgUrl || "" 
-            };
-
-            const res = await api("", "POST", payload);
+            const res = await api("", "POST", { type: isReply ? 'reply' : 'thread', threadId: isReply ? hash.split('/')[1] : null, title: title || "Anonymous", content: content, image: imgUrl || "" });
             if(res) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
-            else { alert("Transmission failed."); }
             btn.disabled = false;
         }
 
         async function handleAction(type, tId, rId = null, targetIp = null) {
             const pass = prompt("Admin Password Required:"); if(!pass) return;
-            const headers = { 'X-Admin-Pass': pass };
-            
-            let query = "";
-            let method = "DELETE";
-            let body = null;
-
-            if (type === 'nuke') {
-                if(!confirm("DELETE EVERYTHING FROM THIS IP?")) return;
-                query = `?nukeIp=${targetIp}`;
-            } else if (type === 'sticky') {
-                method = "PATCH";
-                query = `?id=${tId}`;
-                body = { action: 'sticky' };
-            } else {
-                query = rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`;
-            }
-
-            const res = await api(query, method, body, headers); 
-            
-            // FIX: If thread deleted while in thread view, redirect home
+            let query = type === 'nuke' ? `?nukeIp=${targetIp}` : (rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`);
+            let method = type === 'sticky' ? 'PATCH' : 'DELETE';
+            const res = await api(query, method, type === 'sticky' ? { action: 'sticky' } : null, { 'X-Admin-Pass': pass });
             if (res && res.success) {
-                if (!rId && type === 'delete' && window.location.hash.includes(tId)) {
-                    window.location.hash = ''; 
-                } else {
-                    router(); 
-                }
+                if (!rId && type === 'delete' && window.location.hash.includes(tId)) window.location.hash = '';
+                else router();
             }
         }
 
         function toggleMenu(id) { 
             const el = document.getElementById(`m-${id}`);
             const parent = el.closest('.glass');
-            
-            // Close others
-            document.querySelectorAll('[id^="m-"]').forEach(m => {
-                if(m !== el) {
-                    m.classList.add('hidden');
-                    m.closest('.glass').style.zIndex = "1";
-                }
-            });
-
+            document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) { m.classList.add('hidden'); m.closest('.glass').style.zIndex = "1"; } });
             const isOpening = el.classList.contains('hidden');
             el.classList.toggle('hidden'); 
-            
-            // FIX: Ensure current thread is on top when menu is open
-            if (parent) {
-                parent.style.zIndex = isOpening ? "100" : "1";
-            }
+            if (parent) parent.style.zIndex = isOpening ? "100" : "1";
         }
 
         async function router() {
             const hash = window.location.hash;
-            if (hash.startsWith('#thread/')) {
-                const t = await api(`?id=${hash.split('/')[1]}`); if(t) renderThread(t);
-            } else {
-                const threads = await api(); renderBoard(threads || []);
-            }
+            if (hash.startsWith('#thread/')) { const t = await api(`?id=${hash.split('/')[1]}`); if(t) renderThread(t); } 
+            else { const threads = await api(); renderBoard(threads || []); }
         }
 
         window.addEventListener('hashchange', router); router();
