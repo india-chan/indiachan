@@ -29,6 +29,7 @@
         .clickable-id:hover { color: #ff9933; text-decoration: underline; }
         .flag-icon { width: 18px; height: 12px; border-radius: 2px; object-fit: cover; display: inline-block; vertical-align: middle; }
         .admin-menu { z-index: 100 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .banner-img { max-width: 300px; width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body class="pb-32">
@@ -45,8 +46,12 @@
     </div>
 
     <div class="max-w-2xl mx-auto px-4">
+        <div class="flex justify-center pt-8" id="banner-area"></div>
+
         <header class="py-12 flex flex-col sm:flex-row justify-between items-center gap-6 text-center sm:text-left">
-            <h1 onclick="window.location.hash = ''" class="text-5xl font-black text-white cursor-pointer italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
+            <div onclick="window.location.hash = ''" class="cursor-pointer">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg5CV9n0R91ThtxHPeBtG_FSKCyUi3Z3KbRnp0Yq0PM5BIA1WVcQO9jieJWdne6hBW_OxAbXX8syFXdw13OG7X447OWbyrvFlh8zXgLDGlzs5iJjisKSfIPg4VDt85UmmBHRUDjr8BdTAmt9K82RQFY-0ovvMNhyL2EeWFa0yfRmbIgatZDsUUHV1_hFm9j/s0/40701.png" alt="IndiaChan Logo" class="max-h-[60px] w-auto">
+            </div>
             <button onclick="openModal()" class="bg-white text-black px-8 py-3 rounded-full font-black text-[10px] tracking-widest uppercase shadow-2xl hover:bg-orange-500 hover:text-white transition-all w-full sm:w-auto">New Thread</button>
         </header>
 
@@ -88,6 +93,21 @@
     <script>
         const WORKER_URL = 'https://indiachan.indiachan.workers.dev/'; 
         let captchaAns = 0;
+
+        // Random Banners
+        const banners = [
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJXoVN6ABWKt4gMrm4eay9-_ivwv43h8YggYhTet6eR8uDMZg-W38zsbwCTNS7apRVB-BXd8ayC1n7oFi7xavb0vSNEHPLEbd2daTSKoAnYiO0RRDQVTsLIdzWwTR3Twk3Z13diw-5N4Zyl_ZgmD7_ur7k8uEWTYDEsf-_SgWS251vuXNHh93T0X_PNXgM/s0/40702.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNMxTjBRA8CagkLOd8ueEpt-t0B8pH_AsFI9D5JlnGEEq7Qy7c6FpZzagghEmXSKeek1HfYXzVS90DbnvbQXZ-I4dO9WUcS-hvzpzpw88mbgQBIiodJEZ4UYYmEOId3UDaKi4WKYcRyJRKuHslJvxJlfY0Ye-1DbQX1LIbWOkLLBEMbAb0oWnjdZJw3imn/s0/40700.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiq8iBOzFptKekj2zgN5_WFKemUaCJhC2RMcaxXB03OoJInVbkxuqrzgYLlbFTvy0vB-nJYdIz-qkq-TqEpqoHKg2GOm8xp9M38F1RwvOfMFW9mrTkrHo_i2fHCAVESlcBFYq4_qRoVmqFkwqWr9KmNDXYlqF5u11GGtUEmxeCASfvs6ZXwHhGk_cIJPtjr/s0/40699.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgXCOtczpXgpFJBNTJPN6AUSIZPlrTlXPZdMRRP87oDTHA4rgSZBGINiS05rj7qOpMQN6LJSZ8BhuisUefNKY0a5IoZS7uBJ_bkbd-YarYdig_26S3SMuTRzlfw1HMFpoIYjTAlt-cghfP5s9fTjyIBsiPME9_nuVcehLeaCdytOmmSIciF9n4KxXbcmxUQ/s0/40697.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzIjRLJoL04m2jI97E3TRQgxZ8muF39OJDVt4Z9IkGN5lu72zOhrXDu-glheHJluKugW0nWE3BcDSCe5bTruLaS_kBNFdsO3Tll2CZwy7yNNt9g9XdDiGeWHdDDv0sElBG4XFUMTuUzSyWlas-VNZWWAx_NYAbMTOiSZ9jW5UR7mspnxxlGQCWLal0y2X2/s0/40696.gif",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBQzTfkmOiD9EXTsaokfM_DjAF73x_ep4MFautqtKXijgXzPyQAqPxsTfsEqqR0hXcN9I-YOxAd_-s3kwqfxb8NyfHtEJyNJUs8D5J1a2xazSbSQ-sFv4jPC3EfJLIxuzlAqepA1I1EhcWhcu1-BYzirtMJwF_DHBvNte2peG57DdZK04xICh_AwpILeCP/s0/40692.png"
+        ];
+
+        function showRandomBanner() {
+            const randomImg = banners[Math.floor(Math.random() * banners.length)];
+            document.getElementById('banner-area').innerHTML = `<img src="${randomImg}" class="banner-img" alt="Board Banner">`;
+        }
 
         function acceptAge() { localStorage.setItem('v3_age', 't'); document.getElementById('ageWall').remove(); }
         if(localStorage.getItem('v3_age')) document.getElementById('ageWall').remove();
@@ -207,60 +227,4 @@
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.innerText = "TRANSMITTING...";
             const res = await api("", "POST", { type: isReply ? 'reply' : 'thread', threadId: isReply ? hash.split('/')[1] : null, title: title || "Anonymous", content: content, image: imgUrl || "" });
-            if(res) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
-            btn.disabled = false;
-        }
-
-        async function handleAction(type, tId, rId = null, targetIp = null) {
-            const pass = prompt("Admin Password Required:"); if(!pass) return;
-            const headers = { 'X-Admin-Pass': pass };
-            let res;
-
-            if (type === 'ban') {
-                if(!confirm(`Ban IP: ${targetIp} for 30 days?`)) return;
-                res = await api("", "POST", { action: 'ban', targetIp: targetIp }, headers);
-            } else if (type === 'nuke') {
-                if(!confirm(`DELETE ALL posts from IP: ${targetIp}?`)) return;
-                res = await api(`?nukeIp=${targetIp}`, "DELETE", null, headers);
-            } else if (type === 'sticky') {
-                res = await api(`?id=${tId}`, "PATCH", { action: 'sticky' }, headers);
-            } else {
-                let query = rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`;
-                res = await api(query, "DELETE", null, headers);
-            }
-
-            if (res && (res.success || !res.error)) {
-                if (type === 'delete' && !rId && window.location.hash.includes(tId)) window.location.hash = '';
-                else router();
-            }
-        }
-
-        function toggleMenu(id) { 
-            const el = document.getElementById(`m-${id}`);
-            const parent = el.closest('.glass');
-            
-            // Close other menus and reset their parent's z-index
-            document.querySelectorAll('[id^="m-"]').forEach(m => { 
-                if(m !== el) { 
-                    m.classList.add('hidden'); 
-                    if(m.closest('.glass')) m.closest('.glass').style.zIndex = "1"; 
-                } 
-            });
-
-            const isOpening = el.classList.contains('hidden');
-            el.classList.toggle('hidden'); 
-            
-            // Bring current parent to front when menu is open to prevent overlap from threads below
-            if (parent) parent.style.zIndex = isOpening ? "100" : "1";
-        }
-
-        async function router() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#thread/')) { const t = await api(`?id=${hash.split('/')[1]}`); if(t) renderThread(t); } 
-            else { const threads = await api(); renderBoard(threads || []); }
-        }
-
-        window.addEventListener('hashchange', router); router();
-    </script>
-</body>
-</html>
+    
