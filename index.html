@@ -35,7 +35,7 @@
 
     <div id="ageWall" class="fixed inset-0 bg-[#05070a] z-[300] flex items-center justify-center p-6 text-center">
         <div class="max-w-sm w-full">
-            <h1 class="text-6xl font-black text-white mb-2 italic uppercase tracking-tighter">India<span class="accent-text">Chan</span></h1>
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg5CV9n0R91ThtxHPeBtG_FSKCyUi3Z3KbRnp0Yq0PM5BIA1WVcQO9jieJWdne6hBW_OxAbXX8syFXdw13OG7X447OWbyrvFlh8zXgLDGlzs5iJjisKSfIPg4VDt85UmmBHRUDjr8BdTAmt9K82RQFY-0ovvMNhyL2EeWFa0yfRmbIgatZDsUUHV1_hFm9j/s0/40701.png" class="mx-auto mb-6 max-h-20 w-auto" alt="IndiaChan">
             <p class="text-slate-500 mb-10 text-[10px] tracking-[0.3em] uppercase opacity-50 font-bold">18+ Only // Access Restricted</p>
             <div class="bg-white/5 border border-white/10 p-6 rounded-3xl mb-8 text-[11px] leading-relaxed text-slate-400">
                 By entering, you confirm you are at least **18 years of age** and agree to abide by local laws. 
@@ -45,8 +45,8 @@
     </div>
 
     <div class="max-w-2xl mx-auto px-4">
-        <div class="flex justify-center pt-6">
-            <img id="topBanner" src="" class="max-w-full h-auto rounded-lg border border-white/10 shadow-lg" style="display:none;">
+        <div class="flex justify-center pt-8">
+            <img id="topBanner" src="" class="max-w-full h-auto rounded-lg border border-white/10" style="display:none;">
         </div>
 
         <header class="py-12 flex flex-col sm:flex-row justify-between items-center gap-6 text-center sm:text-left">
@@ -242,19 +242,35 @@
         function toggleMenu(id) { 
             const el = document.getElementById(`m-${id}`);
             const parent = el.closest('.glass');
-            
             document.querySelectorAll('[id^="m-"]').forEach(m => { 
-                if(m !== el) { 
-                    m.classList.add('hidden'); 
-                    if(m.closest('.glass')) m.closest('.glass').style.zIndex = "1"; 
-                } 
+                if(m !== el) { m.classList.add('hidden'); if(m.closest('.glass')) m.closest('.glass').style.zIndex = "1"; } 
             });
-
             const isOpening = el.classList.contains('hidden');
             el.classList.toggle('hidden'); 
-            
             if (parent) parent.style.zIndex = isOpening ? "100" : "1";
         }
 
         async function router() {
-            const hash = window.location.hash
+            const hash = window.location.hash;
+            if (hash.startsWith('#thread/')) { const t = await api(`?id=${hash.split('/')[1]}`); if(t) renderThread(t); } 
+            else { const threads = await api(); renderBoard(threads || []); }
+        }
+
+        // Logic for Random Banner & Page Init
+        window.onhashchange = router;
+        const bannerImgs = [
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJXoVN6ABWKt4gMrm4eay9-_ivwv43h8YggYhTet6eR8uDMZg-W38zsbwCTNS7apRVB-BXd8ayC1n7oFi7xavb0vSNEHPLEbd2daTSKoAnYiO0RRDQVTsLIdzWwTR3Twk3Z13diw-5N4Zyl_ZgmD7_ur7k8uEWTYDEsf-_SgWS251vuXNHh93T0X_PNXgM/s0/40702.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNMxTjBRA8CagkLOd8ueEpt-t0B8pH_AsFI9D5JlnGEEq7Qy7c6FpZzagghEmXSKeek1HfYXzVS90DbnvbQXZ-I4dO9WUcS-hvzpzpw88mbgQBIiodJEZ4UYYmEOId3UDaKi4WKYcRyJRKuHslJvxJlfY0Ye-1DbQX1LIbWOkLLBEMbAb0oWnjdZJw3imn/s0/40700.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiq8iBOzFptKekj2zgN5_WFKemUaCJhC2RMcaxXB03OoJInVbkxuqrzgYLlbFTvy0vB-nJYdIz-qkq-TqEpqoHKg2GOm8xp9M38F1RwvOfMFW9mrTkrHo_i2fHCAVESlcBFYq4_qRoVmqFkwqWr9KmNDXYlqF5u11GGtUEmxeCASfvs6ZXwHhGk_cIJPtjr/s0/40699.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgXCOtczpXgpFJBNTJPN6AUSIZPlrTlXPZdMRRP87oDTHA4rgSZBGINiS05rj7qOpMQN6LJSZ8BhuisUefNKY0a5IoZS7uBJ_bkbd-YarYdig_26S3SMuTRzlfw1HMFpoIYjTAlt-cghfP5s9fTjyIBsiPME9_nuVcehLeaCdytOmmSIciF9n4KxXbcmxUQ/s0/40697.png",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzIjRLJoL04m2jI97E3TRQgxZ8muF39OJDVt4Z9IkGN5lu72zOhrXDu-glheHJluKugW0nWE3BcDSCe5bTruLaS_kBNFdsO3Tll2CZwy7yNNt9g9XdDiGeWHdDDv0sElBG4XFUMTuUzSyWlas-VNZWWAx_NYAbMTOiSZ9jW5UR7mspnxxlGQCWLal0y2X2/s0/40696.gif",
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBQzTfkmOiD9EXTsaokfM_DjAF73x_ep4MFautqtKXijgXzPyQAqPxsTfsEqqR0hXcN9I-YOxAd_-s3kwqfxb8NyfHtEJyNJUs8D5J1a2xazSbSQ-sFv4jPC3EfJLIxuzlAqepA1I1EhcWhcu1-BYzirtMJwF_DHBvNte2peG57DdZK04xICh_AwpILeCP/s0/40692.png"
+        ];
+        const topB = document.getElementById('topBanner');
+        topB.src = bannerImgs[Math.floor(Math.random() * bannerImgs.length)];
+        topB.style.display = 'block';
+
+        router();
+    </script>
+</body>
+</html>
