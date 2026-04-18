@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IndiaChan | The Premier Indian Anonymous Imageboard</title>
-    <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately.">
-    <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum">
+    <title>IndiaChan | Indian Anonymous Imageboard</title>
+    <meta name="description" id="meta-desc" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, and news.">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -16,31 +15,25 @@
         .glass { background: rgba(13, 17, 28, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); position: relative; }
         .glass-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-hover:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 153, 51, 0.3); transform: translateY(-3px); }
-        .thread-number { position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d); color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px; box-shadow: 0 4px 15px rgba(255, 153, 51, 0.5); z-index: 20; border: 1px solid rgba(255,255,255,0.3); }
-        .post-img { max-width: 100%; max-height: 450px; object-fit: contain; border-radius: 12px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: zoom-in; display: block; }
+        .thread-number { position: absolute; top: -10px; left: 20px; background: linear-gradient(135deg, #ff9933, #d47a1d); color: white; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 6px; z-index: 20; border: 1px solid rgba(255,255,255,0.3); }
+        .post-img { width: 100%; height: auto; max-height: 800px; object-fit: contain; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); cursor: zoom-in; display: block; }
         .thumb-box { width: 85px; height: 85px; min-width: 85px; border-radius: 16px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); }
-        .thumb-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        .thumb-img { width: 100%; height: 100%; object-fit: cover; }
         .accent-text { color: #ff9933; }
         .accent-bg { background: #ff9933; }
-        .sticky-tag { background: #ff9933; color: white; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; }
-        input, textarea { background: rgba(15, 23, 42, 0.7) !important; border: 1px solid rgba(255,255,255,0.05) !important; color: white !important; transition: all 0.3s; }
-        input:focus, textarea:focus { border-color: #ff9933 !important; outline: none; }
-        .clickable-id { cursor: pointer; transition: color 0.2s; }
-        .clickable-id:hover { color: #ff9933; text-decoration: underline; }
-        .flag-icon { width: 18px; height: 12px; border-radius: 2px; object-fit: cover; display: inline-block; vertical-align: middle; }
-        .admin-menu { z-index: 100 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .tag { padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 900; margin-right: 8px; text-transform: uppercase; color: white; }
+        .sticky-tag { background: #ff9933; }
+        .lock-tag { background: #64748b; }
+        input, textarea { background: rgba(15, 23, 42, 0.7) !important; border: 1px solid rgba(255,255,255,0.05) !important; color: white !important; }
+        .admin-menu { z-index: 100; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
     </style>
 </head>
 <body class="pb-32">
 
     <div id="ageWall" class="fixed inset-0 bg-[#05070a] z-[300] flex items-center justify-center p-6 text-center">
         <div class="max-w-sm w-full">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg5CV9n0R91ThtxHPeBtG_FSKCyUi3Z3KbRnp0Yq0PM5BIA1WVcQO9jieJWdne6hBW_OxAbXX8syFXdw13OG7X447OWbyrvFlh8zXgLDGlzs5iJjisKSfIPg4VDt85UmmBHRUDjr8BdTAmt9K82RQFY-0ovvMNhyL2EeWFa0yfRmbIgatZDsUUHV1_hFm9j/s0/40701.png" class="mx-auto mb-6 max-h-20 w-auto" alt="IndiaChan">
-            <p class="text-slate-500 mb-10 text-[10px] tracking-[0.3em] uppercase opacity-50 font-bold">18+ Only // Access Restricted</p>
-            <div class="bg-white/5 border border-white/10 p-6 rounded-3xl mb-8 text-[11px] leading-relaxed text-slate-400">
-                By entering, you confirm you are at least **18 years of age** and agree to abide by local laws. 
-            </div>
-            <button onclick="acceptAge()" class="accent-bg w-full py-5 rounded-2xl text-white font-black tracking-widest hover:scale-105 transition-all shadow-lg">I AM 18+ / ENTER</button>
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg5CV9n0R91ThtxHPeBtG_FSKCyUi3Z3KbRnp0Yq0PM5BIA1WVcQO9jieJWdne6hBW_OxAbXX8syFXdw13OG7X447OWbyrvFlh8zXgLDGlzs5iJjisKSfIPg4VDt85UmmBHRUDjr8BdTAmt9K82RQFY-0ovvMNhyL2EeWFa0yfRmbIgatZDsUUHV1_hFm9j/s0/40701.png" class="mx-auto mb-6 max-h-20" alt="IndiaChan">
+            <button onclick="acceptAge()" class="accent-bg w-full py-5 rounded-2xl text-white font-black tracking-widest">I AM 18+ / ENTER</button>
         </div>
     </div>
 
@@ -49,227 +42,180 @@
             <img id="topBanner" src="" class="max-w-full h-auto rounded-lg border border-white/10" style="display:none;">
         </div>
 
-        <header class="py-12 flex flex-col sm:flex-row justify-between items-center gap-6 text-center sm:text-left">
-            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg5CV9n0R91ThtxHPeBtG_FSKCyUi3Z3KbRnp0Yq0PM5BIA1WVcQO9jieJWdne6hBW_OxAbXX8syFXdw13OG7X447OWbyrvFlh8zXgLDGlzs5iJjisKSfIPg4VDt85UmmBHRUDjr8BdTAmt9K82RQFY-0ovvMNhyL2EeWFa0yfRmbIgatZDsUUHV1_hFm9j/s0/40701.png" onclick="window.location.hash = ''" class="h-14 w-auto cursor-pointer" alt="IndiaChan">
-            <button onclick="openModal()" class="bg-white text-black px-8 py-3 rounded-full font-black text-[10px] tracking-widest uppercase shadow-2xl hover:bg-orange-500 hover:text-white transition-all w-full sm:w-auto">New Thread</button>
+        <header class="py-12 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg5CV9n0R91ThtxHPeBtG_FSKCyUi3Z3KbRnp0Yq0PM5BIA1WVcQO9jieJWdne6hBW_OxAbXX8syFXdw13OG7X447OWbyrvFlh8zXgLDGlzs5iJjisKSfIPg4VDt85UmmBHRUDjr8BdTAmt9K82RQFY-0ovvMNhyL2EeWFa0yfRmbIgatZDsUUHV1_hFm9j/s0/40701.png" onclick="window.location.hash = ''" class="h-14 cursor-pointer">
+            <button onclick="openModal()" id="mainNewThreadBtn" class="bg-white text-black px-8 py-3 rounded-full font-black text-[10px] tracking-widest uppercase shadow-2xl">New Thread</button>
         </header>
 
+        <h1 id="pageHeading" class="text-white font-black text-xl mb-6 uppercase tracking-widest hidden">The Archive</h1>
         <div id="view-container" class="space-y-6"></div>
 
-        <footer id="mainFooter" class="mt-20 py-10 border-t border-white/5 text-center">
-            <div class="flex justify-center gap-6 mb-8">
-                <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
-                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest text-wrap">IndiaChan | https://india-chan.github.io/indiachan/</span>
+        <footer class="mt-20 py-10 border-t border-white/5 text-center">
+            <div class="flex justify-center gap-6 mb-4">
+                <a href="#archive" class="text-[10px] font-black uppercase text-orange-500 hover:underline">📁 The Archive</a>
+                <span class="text-[10px] font-black uppercase text-slate-600">Est. 2026</span>
             </div>
-            <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">IndiaChan is a law-abiding platform. All posts are user-generated. Not Associated with Older/Other IndianChan or BharatChan</p>
-            <div class="glass p-4 rounded-2xl inline-block border border-white/5">
-                <span class="text-[9px] font-bold text-slate-500 block mb-1 uppercase tracking-tighter">Takedown / Content Removal</span>
-                <a href="mailto:JefferyEpsteinMossad@proton.me" class="text-[10px] font-black text-white hover:text-orange-500 transition-colors">JefferyEpsteinMossad@proton.me</a>
+            <p class="text-[10px] text-slate-500 mb-6">IndiaChan is an anonymous community. Posts rank on Google for archival purposes.</p>
+            <div class="glass p-4 rounded-2xl inline-block">
+                <a href="mailto:JefferyEpsteinMossad@proton.me" class="text-[10px] font-black text-white">Abuse: JefferyEpsteinMossad@proton.me</a>
             </div>
         </footer>
     </div>
 
-    <div id="postModal" class="hidden fixed inset-0 bg-black/90 z-[250] flex items-end sm:items-center justify-center backdrop-blur-md">
-        <div class="glass w-full max-w-lg p-6 sm:p-10 rounded-t-[3rem] sm:rounded-[3rem] shadow-2xl overflow-y-auto max-h-[90vh]">
-            <div class="flex justify-between items-center mb-8">
-                <span id="modalTitle" class="text-[11px] font-black accent-text uppercase tracking-widest">New Transmission</span>
-                <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div id="postModal" class="hidden fixed inset-0 bg-black/90 z-[250] flex items-center justify-center backdrop-blur-md p-4">
+        <div class="glass w-full max-w-lg p-8 rounded-[3rem] overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center mb-6">
+                <span id="modalTitle" class="text-[11px] font-black accent-text uppercase tracking-widest">Transmit</span>
+                <button onclick="closeModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
-            <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content..." class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
-            <div class="mb-4">
-                <p class="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-widest">Upload to <a href="https://imgbb.com" target="_blank" class="accent-text underline">ImgBB</a> & Paste Link Below</p>
-                <input id="inpImageLink" type="url" placeholder="Paste image URL here..." class="w-full p-4 rounded-xl text-xs font-bold mb-2">
+            <input id="inpTitle" type="text" placeholder="Subject" class="w-full p-4 rounded-2xl mb-4 font-bold">
+            <textarea id="inpContent" placeholder="Anonymous content..." class="w-full p-4 rounded-2xl mb-4 h-40 outline-none"></textarea>
+            <input id="inpImageLink" type="url" placeholder="ImgBB Link" class="w-full p-4 rounded-xl text-xs mb-4">
+            
+            <div class="bg-white/5 p-4 rounded-2xl flex items-center justify-between mb-6">
+                <span id="captchaTxt" class="text-orange-500 font-black tracking-widest"></span>
+                <input id="inpCaptcha" type="text" class="w-24 bg-transparent border-b-2 border-orange-500 text-center text-white outline-none">
             </div>
-            <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between mb-8">
-                <span id="captchaTxt" class="text-[10px] font-black text-slate-500 uppercase"></span>
-                <input id="inpCaptcha" type="number" class="w-14 bg-transparent text-center border-b-2 border-orange-500 outline-none font-black text-white">
-            </div>
-            <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-5 rounded-[1.5rem] text-white font-black uppercase tracking-widest hover:brightness-110 transition-all">Transmit Message</button>
+            <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-5 rounded-2xl text-white font-black uppercase">Send Message</button>
         </div>
     </div>
 
     <script>
         const WORKER_URL = 'https://indiachan.indiachan.workers.dev/'; 
-        let captchaAns = 0;
+        let captchaAns = "";
 
         function acceptAge() { localStorage.setItem('v3_age', 't'); document.getElementById('ageWall').remove(); }
         if(localStorage.getItem('v3_age')) document.getElementById('ageWall').remove();
 
         function genCaptcha() {
-            const a = Math.floor(Math.random() * 9) + 1; const b = Math.floor(Math.random() * 9) + 1;
-            captchaAns = a + b; document.getElementById('captchaTxt').innerText = `${a} + ${b} =`;
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            captchaAns = "";
+            for(let i=0; i<5; i++) captchaAns += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('captchaTxt').innerText = captchaAns;
             document.getElementById('inpCaptcha').value = '';
         }
 
-        async function api(path = "", method = "GET", body = null, headers = {}) {
-            const url = path.includes('?') ? `${WORKER_URL}${path}&t=${Date.now()}` : `${WORKER_URL}${path}?t=${Date.now()}`;
-            const options = { method, headers: { ...headers } };
+        async function api(path="", method="GET", body=null, headers={}) {
+            const url = `${WORKER_URL}${path}${path.includes('?') ? '&' : '?'}t=${Date.now()}`;
+            const options = { method, headers };
             if (body) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
             const res = await fetch(url, options);
-            if (res.status === 403) { const data = await res.json(); alert(data.error || "Forbidden"); return null; }
-            return res.ok ? await res.json() : null;
+            return res.ok ? await res.json() : (res.status === 403 ? alert("Thread is Locked/Archived") : null);
         }
 
-        function getThumb(reply) {
-            if (!reply) return `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">EMPTY</div>`;
-            const thumbUrl = reply.image || reply.content?.match(/(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp|avif))/i)?.[0];
-            return thumbUrl ? `<div class="thumb-box"><img src="${thumbUrl}" class="thumb-img" onerror="this.src='https://placehold.co/85x85?text=IMG'"></div>` : `<div class="thumb-box flex items-center justify-center text-[10px] text-slate-700 font-black">TXT</div>`;
-        }
-
-        function quoteReply(id) {
-            openModal();
-            const textarea = document.getElementById('inpContent');
-            const quote = `>>${id}\n`;
-            textarea.value = textarea.value ? textarea.value + '\n' + quote : quote;
-            textarea.focus();
-        }
-
-        function renderBoard(threads) {
-            document.getElementById('mainFooter').style.display = 'block';
-            document.getElementById('view-container').innerHTML = threads.map((t, i) => `
+        function renderBoard(threads, isArchive = false) {
+            document.getElementById('pageHeading').classList.toggle('hidden', !isArchive);
+            document.getElementById('mainNewThreadBtn').style.display = isArchive ? 'none' : 'block';
+            
+            const filtered = threads.filter(t => isArchive ? t.locked : !t.locked);
+            document.getElementById('view-container').innerHTML = filtered.map((t, i) => `
                 <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
                     <div class="thread-number">#${i + 1}</div>
-                    ${getThumb(t.replies ? t.replies[0] : null)}
+                    ${getThumb(t.replies[0])}
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center mb-1">
-                            ${t.sticky ? '<span class="sticky-tag">STICKY</span>' : ''}
-                            <h2 class="text-sm font-black text-white uppercase truncate tracking-tight">${t.title || 'Anonymous'}</h2>
+                            ${t.sticky ? '<span class="tag sticky-tag">STICKY</span>' : ''}
+                            ${t.locked ? '<span class="tag lock-tag">LOCKED</span>' : ''}
+                            <h2 class="text-sm font-black text-white uppercase truncate">${t.title}</h2>
                         </div>
-                        <p class="text-slate-500 text-[11px] line-clamp-2 opacity-80">${t.replies && t.replies[0] ? t.replies[0].content : ''}</p>
-                        <div class="mt-3 text-[9px] font-black text-slate-600 tracking-widest uppercase">${t.replies ? t.replies.length : 0} REPLIES</div>
+                        <p class="text-slate-500 text-[11px] line-clamp-1">${t.replies[0].content}</p>
                     </div>
-                    <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
-                    <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
-                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Sticky</button>
-                        <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-400 border-b border-white/5">Admin: Delete</button>
-                        <button onclick="event.stopPropagation(); handleAction('nuke', null, null, '${t.replies && t.replies[0] ? t.replies[0].ip : ''}')" class="w-full p-4 text-left text-red-600 bg-red-500/5 border-b border-white/5">Delete All from IP</button>
-                        <button onclick="event.stopPropagation(); handleAction('ban', null, null, '${t.replies && t.replies[0] ? t.replies[0].ip : ''}')" class="w-full p-4 text-left text-red-900 bg-red-900/10">Ban User (30D)</button>
+                    <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-2 text-slate-700"><i class="fa-solid fa-ellipsis-v"></i></button>
+                    <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-44 glass rounded-2xl text-[9px] font-black uppercase border border-white/10 overflow-hidden">
+                        <button onclick="handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Sticky</button>
+                        <button onclick="handleAction('lock', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Admin: Lock/Unlock</button>
+                        <button onclick="handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-500">Admin: Delete</button>
                     </div>
                 </div>
             `).join('');
         }
 
         function renderThread(t) {
-            document.getElementById('mainFooter').style.display = 'none';
+            // SEO update
+            document.title = `${t.title} | IndiaChan`;
+            document.getElementById('meta-desc').setAttribute('content', t.replies[0].content.substring(0, 150));
+
             document.getElementById('view-container').innerHTML = `
-                <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return to Board</button>
-                <div class="space-y-6 pb-20">
-                    ${t.replies.map((r, i) => {
-                        const country = (r.country || 'un').toLowerCase();
-                        const userId = r.userId || (r.hash ? r.hash.substring(0,8) : '????????');
-                        return `
-                        <div class="relative glass p-7 rounded-[2.5rem] ${i > 0 ? 'ml-6 sm:ml-12 border-l-2 border-white/5' : 'border-orange-500/20'}">
-                            <div class="flex justify-between items-center mb-5">
-                                <div class="flex items-center gap-3">
-                                    <img src="https://flagcdn.com/w20/${country}.png" class="flag-icon" onerror="this.src='https://flagcdn.com/w20/un.png'">
-                                    <span onclick="quoteReply('${userId}')" class="text-[10px] font-black text-slate-500 uppercase clickable-id">ID: ${userId}</span>
-                                </div>
+                <button onclick="window.location.hash = ''" class="mb-4 text-[10px] font-black uppercase text-slate-500">← Back</button>
+                <h1 class="text-2xl font-black text-white mb-8 uppercase tracking-tighter">${t.title}</h1>
+                <div class="space-y-6">
+                    ${t.replies.map(r => `
+                        <div class="relative glass p-7 rounded-[2.5rem]">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-[10px] font-black text-slate-500 uppercase">ID: ${r.userId}</span>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800"><i class="fa-solid fa-ellipsis"></i></button>
-                                <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
-                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-white/60 hover:bg-white/5 border-b border-white/5">Delete Post</button>
-                                    <button onclick="handleAction('nuke', null, null, '${r.ip}')" class="w-full p-4 text-left text-red-500 bg-red-500/5 border-b border-white/5">Delete All from IP</button>
-                                    <button onclick="handleAction('ban', null, null, '${r.ip}')" class="w-full p-4 text-left text-red-900 bg-red-900/10">Ban User (30D)</button>
+                                <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-44 glass rounded-2xl text-[9px] font-black uppercase border border-white/10 overflow-hidden">
+                                    <button onclick="handleAction('edit', '${t.id}', '${r.id}')" class="w-full p-4 text-left border-b border-white/5">Edit Text</button>
+                                    <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-500">Delete Post</button>
                                 </div>
                             </div>
+                            ${r.image ? `<img src="${r.image}" class="post-img" onclick="window.open('${r.image}')">` : ''}
                             <div class="text-slate-200 text-[14px] leading-relaxed whitespace-pre-wrap">${formatContent(r.content)}</div>
-                            ${r.image ? `<img src="${r.image}" class="post-img" onclick="window.open('${r.image}')" onerror="this.style.display='none'">` : ''}
-                        </div>`;
-                    }).join('')}
+                        </div>`).join('')}
                 </div>
-                <div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">Submit Reply</button></div>
+                ${!t.locked ? `<div class="mt-10"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-3xl text-white font-black uppercase">Post Reply</button></div>` : '<div class="mt-10 p-5 bg-white/5 text-center rounded-2xl uppercase font-black text-xs text-slate-600">Thread Archived - No more replies</div>'}
             `;
-            window.scrollTo(0, 0);
+        }
+
+        function getThumb(r) {
+            return r.image ? `<div class="thumb-box"><img src="${r.image}" class="thumb-img"></div>` : `<div class="thumb-box flex items-center justify-center text-[10px] font-black text-slate-800">TEXT</div>`;
         }
 
         function formatContent(text) {
-            if (!text) return "";
-            let formatted = text.replace(/>>([a-fA-F0-9]{8})/g, '<span class="accent-text font-bold">>>$1</span>');
-            formatted = formatted.split('\n').map(l => {
-                const trimmed = l.trim();
-                return (trimmed.startsWith('>') && !trimmed.startsWith('>>')) ? `<span class="text-green-500 font-medium">${l}</span>` : l;
-            }).join('\n');
-            return formatted.replace(/(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif|webp|avif)|https?:\/\/i\.ibb\.co\/[^\s]+)/gi, (match) => `<img src="${match}" class="post-img" onerror="this.style.display='none'">`);
+            return text.replace(/>>([a-fA-F0-9]{8})/g, '<span class="accent-text">>>$1</span>');
         }
 
-        function openModal() {
-            const isReply = window.location.hash.startsWith('#thread/');
-            document.getElementById('modalTitle').innerText = isReply ? "Reply Transmission" : "New Transmission";
-            document.getElementById('inpTitle').style.display = isReply ? 'none' : 'block';
-            document.getElementById('submitBtn').innerText = isReply ? "Submit Reply" : "Transmit Message";
-            genCaptcha(); document.getElementById('postModal').classList.remove('hidden');
-        }
-
+        function openModal() { genCaptcha(); document.getElementById('postModal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('postModal').classList.add('hidden'); }
 
         async function submitPost() {
-            const title = document.getElementById('inpTitle').value;
-            const content = document.getElementById('inpContent').value;
-            const imgUrl = document.getElementById('inpImageLink').value.trim();
-            if (parseInt(document.getElementById('inpCaptcha').value) !== captchaAns) return alert("Captcha failed.");
-            const hash = window.location.hash; const isReply = hash.startsWith('#thread/');
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerText = "TRANSMITTING...";
-            const res = await api("", "POST", { type: isReply ? 'reply' : 'thread', threadId: isReply ? hash.split('/')[1] : null, title: title || "Anonymous", content: content, image: imgUrl || "" });
-            if(res) { closeModal(); document.getElementById('inpContent').value = ''; document.getElementById('inpTitle').value = ''; router(); }
-            btn.disabled = false;
-        }
-
-        async function handleAction(type, tId, rId = null, targetIp = null) {
-            const pass = prompt("Admin Password Required:"); if(!pass) return;
-            const headers = { 'X-Admin-Pass': pass };
-            let res;
-
-            if (type === 'ban') {
-                if(!confirm(`Ban IP: ${targetIp} for 30 days?`)) return;
-                res = await api("", "POST", { action: 'ban', targetIp: targetIp }, headers);
-            } else if (type === 'nuke') {
-                if(!confirm(`DELETE ALL posts from IP: ${targetIp}?`)) return;
-                res = await api(`?nukeIp=${targetIp}`, "DELETE", null, headers);
-            } else if (type === 'sticky') {
-                res = await api(`?id=${tId}`, "PATCH", { action: 'sticky' }, headers);
-            } else {
-                let query = rId ? `?id=${tId}&replyId=${rId}` : `?id=${tId}`;
-                res = await api(query, "DELETE", null, headers);
-            }
-
-            if (res && (res.success || !res.error)) {
-                if (type === 'delete' && !rId && window.location.hash.includes(tId)) window.location.hash = '';
-                else router();
-            }
-        }
-
-        function toggleMenu(id) { 
-            const el = document.getElementById(`m-${id}`);
-            const parent = el.closest('.glass');
-            document.querySelectorAll('[id^="m-"]').forEach(m => { 
-                if(m !== el) { m.classList.add('hidden'); if(m.closest('.glass')) m.closest('.glass').style.zIndex = "1"; } 
+            if (document.getElementById('inpCaptcha').value.toUpperCase() !== captchaAns) return alert("Captcha failed.");
+            const threadId = window.location.hash.startsWith('#thread/') ? window.location.hash.split('/')[1] : null;
+            const res = await api("", "POST", {
+                type: threadId ? 'reply' : 'thread',
+                threadId: threadId,
+                title: document.getElementById('inpTitle').value || "Anonymous",
+                content: document.getElementById('inpContent').value,
+                image: document.getElementById('inpImageLink').value
             });
-            const isOpening = el.classList.contains('hidden');
-            el.classList.toggle('hidden'); 
-            if (parent) parent.style.zIndex = isOpening ? "100" : "1";
+            if(res) { closeModal(); router(); }
+        }
+
+        async function handleAction(type, tId, rId = null) {
+            const pass = prompt("Admin Password:"); if(!pass) return;
+            const headers = { 'X-Admin-Pass': pass };
+            let body = { action: type };
+
+            if(type === 'edit') body.newContent = prompt("Enter new text content:");
+            
+            const res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, (type === 'delete' ? 'DELETE' : 'PATCH'), body, headers);
+            if(res) router();
+        }
+
+        function toggleMenu(id) {
+            const el = document.getElementById(`m-${id}`);
+            document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) m.classList.add('hidden'); });
+            el.classList.toggle('hidden');
         }
 
         async function router() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#thread/')) { const t = await api(`?id=${hash.split('/')[1]}`); if(t) renderThread(t); } 
-            else { const threads = await api(); renderBoard(threads || []); }
+            const h = window.location.hash;
+            if (h.startsWith('#thread/')) {
+                const t = await api(`?id=${h.split('/')[1]}`);
+                if(t) renderThread(t);
+            } else if (h === '#archive') {
+                const threads = await api();
+                renderBoard(threads || [], true);
+            } else {
+                const threads = await api();
+                renderBoard(threads || [], false);
+            }
         }
 
-        // Logic for Random Banner & Page Init
         window.onhashchange = router;
-        const bannerImgs = [
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJXoVN6ABWKt4gMrm4eay9-_ivwv43h8YggYhTet6eR8uDMZg-W38zsbwCTNS7apRVB-BXd8ayC1n7oFi7xavb0vSNEHPLEbd2daTSKoAnYiO0RRDQVTsLIdzWwTR3Twk3Z13diw-5N4Zyl_ZgmD7_ur7k8uEWTYDEsf-_SgWS251vuXNHh93T0X_PNXgM/s0/40702.png",
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNMxTjBRA8CagkLOd8ueEpt-t0B8pH_AsFI9D5JlnGEEq7Qy7c6FpZzagghEmXSKeek1HfYXzVS90DbnvbQXZ-I4dO9WUcS-hvzpzpw88mbgQBIiodJEZ4UYYmEOId3UDaKi4WKYcRyJRKuHslJvxJlfY0Ye-1DbQX1LIbWOkLLBEMbAb0oWnjdZJw3imn/s0/40700.png",
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiq8iBOzFptKekj2zgN5_WFKemUaCJhC2RMcaxXB03OoJInVbkxuqrzgYLlbFTvy0vB-nJYdIz-qkq-TqEpqoHKg2GOm8xp9M38F1RwvOfMFW9mrTkrHo_i2fHCAVESlcBFYq4_qRoVmqFkwqWr9KmNDXYlqF5u11GGtUEmxeCASfvs6ZXwHhGk_cIJPtjr/s0/40699.png",
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgXCOtczpXgpFJBNTJPN6AUSIZPlrTlXPZdMRRP87oDTHA4rgSZBGINiS05rj7qOpMQN6LJSZ8BhuisUefNKY0a5IoZS7uBJ_bkbd-YarYdig_26S3SMuTRzlfw1HMFpoIYjTAlt-cghfP5s9fTjyIBsiPME9_nuVcehLeaCdytOmmSIciF9n4KxXbcmxUQ/s0/40697.png",
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzIjRLJoL04m2jI97E3TRQgxZ8muF39OJDVt4Z9IkGN5lu72zOhrXDu-glheHJluKugW0nWE3BcDSCe5bTruLaS_kBNFdsO3Tll2CZwy7yNNt9g9XdDiGeWHdDDv0sElBG4XFUMTuUzSyWlas-VNZWWAx_NYAbMTOiSZ9jW5UR7mspnxxlGQCWLal0y2X2/s0/40696.gif",
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBQzTfkmOiD9EXTsaokfM_DjAF73x_ep4MFautqtKXijgXzPyQAqPxsTfsEqqR0hXcN9I-YOxAd_-s3kwqfxb8NyfHtEJyNJUs8D5J1a2xazSbSQ-sFv4jPC3EfJLIxuzlAqepA1I1EhcWhcu1-BYzirtMJwF_DHBvNte2peG57DdZK04xICh_AwpILeCP/s0/40692.png"
-        ];
-        const topB = document.getElementById('topBanner');
-        topB.src = bannerImgs[Math.floor(Math.random() * bannerImgs.length)];
-        topB.style.display = 'block';
-
+        const bannerImgs = ["https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJXoVN6ABWKt4gMrm4eay9-_ivwv43h8YggYhTet6eR8uDMZg-W38zsbwCTNS7apRVB-BXd8ayC1n7oFi7xavb0vSNEHPLEbd2daTSKoAnYiO0RRDQVTsLIdzWwTR3Twk3Z13diw-5N4Zyl_ZgmD7_ur7k8uEWTYDEsf-_SgWS251vuXNHh93T0X_PNXgM/s0/40702.png", "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNMxTjBRA8CagkLOd8ueEpt-t0B8pH_AsFI9D5JlnGEEq7Qy7c6FpZzagghEmXSKeek1HfYXzVS90DbnvbQXZ-I4dO9WUcS-hvzpzpw88mbgQBIiodJEZ4UYYmEOId3UDaKi4WKYcRyJRKuHslJvxJlfY0Ye-1DbQX1LIbWOkLLBEMbAb0oWnjdZJw3imn/s0/40700.png"];
+        document.getElementById('topBanner').src = bannerImgs[Math.floor(Math.random() * bannerImgs.length)];
+        document.getElementById('topBanner').style.display = 'block';
         router();
     </script>
 </body>
