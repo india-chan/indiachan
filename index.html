@@ -79,7 +79,8 @@
                 <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
-            <textarea id="inpContent" maxlength="2000" placeholder="Enter anonymous content..." class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            <textarea id="inpContent" maxlength="2000" placeholder="Enter anonymous content...
+(When you paste a video or image link, the site will try to embed it. If you don't want it embedded, write NOT_EMBED:<paste link here>)" class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
             
             <div class="mb-4">
                 <p class="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-widest">Image Attachment</p>
@@ -216,7 +217,31 @@
                 <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return</button>
                 <h1 class="text-xl font-black text-white mb-8 uppercase tracking-tighter">${t.title} ${t.locked ? '<i class="fa-solid fa-lock text-sm text-red-500 ml-2"></i>' : ''}</h1>
                 <div class="space-y-6 pb-24">
-                    ${t.replies.map((r, i) => `
+                    ${t.replies.map((r, i) => {
+                        let contentHtml = r.content
+                            .replace(/>>([a-fA-F0-9]{8})/g, '<span class="accent-text font-bold">>>$1</span>');
+
+                        const urlRegex = /(https?:\/\/[^\s]+)/g;
+                        const embeds = [];
+                        
+                        contentHtml = contentHtml.replace(urlRegex, (match, url) => {
+                            const isNoEmbed = r.content.includes(`NOT_EMBED:${url}`);
+                            if (isNoEmbed) {
+                                return match.replace('NOT_EMBED:', '');
+                            }
+
+                            const isImg = url.match(/\.(jpeg|jpg|gif|png|webp)$/i);
+                            const isVid = url.match(/\.(mp4|webm|ogg)$/i);
+
+                            if (isImg) {
+                                embeds.push(`<img src="${url}" class="post-img" onclick="toggleExpand(this)">`);
+                            } else if (isVid) {
+                                embeds.push(`<video controls class="post-img"><source src="${url}"></video>`);
+                            }
+                            return `<a href="${url}" target="_blank" class="text-orange-500 underline text-xs">${url}</a>`;
+                        });
+
+                        return `
                         <div class="relative glass p-7 rounded-[2.5rem]">
                             <div class="flex justify-between items-center mb-5">
                                 <div class="flex items-center gap-3">
@@ -232,9 +257,11 @@
                                     <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-500">Delete Post</button>
                                 </div>
                             </div>
-                            <div class="text-slate-200 text-[14px] leading-relaxed whitespace-pre-wrap">${r.content.replace(/>>([a-fA-F0-9]{8})/g, '<span class="accent-text font-bold">>>$1</span>')}</div>
+                            <div class="text-slate-200 text-[14px] leading-relaxed whitespace-pre-wrap">${contentHtml}</div>
+                            ${embeds.join('')}
                             ${r.image ? `<img src="${r.image}" class="post-img" onclick="toggleExpand(this)">` : ''}
-                        </div>`).join('')}
+                        </div>`;
+                    }).join('')}
                 </div>
                 ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>` : '<div class="fixed bottom-10 left-4 right-4 text-center text-red-500 font-black uppercase text-[10px] tracking-widest bg-[#05070a]/80 py-4 backdrop-blur-md rounded-full border border-red-500/20">Thread Locked / Archived</div>'}
             `;
