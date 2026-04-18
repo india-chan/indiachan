@@ -128,6 +128,7 @@
         }
 
         function renderBoard(threads, filterArchive = false) {
+            document.title = "IndiaChan | The Premier Indian Anonymous Imageboard";
             document.getElementById('mainFooter').style.display = 'block';
             const filteredThreads = threads.filter(t => filterArchive ? t.locked : !t.locked);
             
@@ -163,6 +164,7 @@
         }
 
         function renderThread(t) {
+            document.title = `${t.title} | IndiaChan`;
             document.getElementById('mainFooter').style.display = 'none';
             document.getElementById('view-container').innerHTML = `
                 <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return</button>
