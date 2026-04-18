@@ -127,9 +127,20 @@
             textarea.focus();
         }
 
-        function renderBoard(threads) {
+        function renderBoard(threads, filterArchive = false) {
             document.getElementById('mainFooter').style.display = 'block';
-            document.getElementById('view-container').innerHTML = threads.map((t, i) => `
+            
+            // Filter threads based on context: Archive vs Main Board
+            const filteredThreads = threads.filter(t => filterArchive ? t.locked : !t.locked);
+            
+            const headerInfo = filterArchive 
+                ? `<div class="flex flex-col gap-2 mb-6">
+                    <button onclick="window.location.hash = ''" class="w-fit text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return to Board</button>
+                    <div class="text-[10px] font-black uppercase text-orange-500 tracking-[0.3em]">Viewing: The Archive</div>
+                   </div>` 
+                : '';
+
+            document.getElementById('view-container').innerHTML = headerInfo + filteredThreads.map((t, i) => `
                 <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
                     <div class="thread-number">#${i + 1}</div>
                     ${getThumb(t.replies ? t.replies[0] : null)}
@@ -165,6 +176,7 @@
                                 <div class="flex items-center gap-3">
                                     <img src="https://flagcdn.com/w20/${(r.country || 'un').toLowerCase()}.png" class="flag-icon">
                                     <span onclick="quoteReply('${r.userId}')" class="text-[10px] font-black text-slate-500 uppercase clickable-id">ID: ${r.userId}</span>
+                                    <span class="text-[9px] font-bold text-slate-600 tracking-tighter ml-1">${r.time || ''}</span>
                                 </div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800 hover:text-white p-2"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
@@ -178,7 +190,7 @@
                             ${r.image ? `<img src="${r.image}" class="post-img" onclick="toggleExpand(this)">` : ''}
                         </div>`).join('')}
                 </div>
-                ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>` : '<div class="fixed bottom-10 left-4 right-4 text-center text-red-500 font-black uppercase text-[10px] tracking-widest">Thread Locked</div>'}
+                ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>` : '<div class="fixed bottom-10 left-4 right-4 text-center text-red-500 font-black uppercase text-[10px] tracking-widest bg-[#05070a]/80 py-4 backdrop-blur-md rounded-full border border-red-500/20">Thread Locked / Archived</div>'}
             `;
             window.scrollTo(0, 0);
         }
@@ -227,8 +239,18 @@
 
         async function router() {
             const h = window.location.hash;
-            if (h.startsWith('#thread/')) { const t = await api(`?id=${h.split('/')[1]}`); if(t) renderThread(t); } 
-            else { const threads = await api(); renderBoard(threads || []); }
+            if (h.startsWith('#thread/')) { 
+                const t = await api(`?id=${h.split('/')[1]}`); 
+                if(t) renderThread(t); 
+            } 
+            else if (h === '#archive') {
+                const threads = await api();
+                renderBoard(threads || [], true);
+            }
+            else { 
+                const threads = await api(); 
+                renderBoard(threads || [], false); 
+            }
         }
 
         window.onhashchange = router;
