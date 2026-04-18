@@ -139,7 +139,7 @@
                 : '';
 
             document.getElementById('view-container').innerHTML = headerInfo + filteredThreads.map((t, i) => `
-                <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
+                <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover hover:z-[110] p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
                     <div class="thread-number">#${i + 1}</div>
                     ${getThumb(t.replies ? t.replies[0] : null)}
                     <div class="flex-1 min-w-0">
@@ -208,7 +208,6 @@
         }
 
         async function handleAction(type, tId, rId = null, ip = null) {
-            // Report is a public action, no admin pass needed
             if (type === 'report') {
                 const res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, "PATCH", { action: 'report' });
                 if(res) alert("Post reported.");
