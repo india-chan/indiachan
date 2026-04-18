@@ -62,7 +62,7 @@
             <div class="flex justify-center gap-6 mb-8">
                 <span class="text-[10px] font-black uppercase text-slate-600 tracking-widest">Est. 2026</span>
                 <a href="#archive" class="text-[10px] font-black uppercase text-orange-500 tracking-widest">The Archive</a>
-                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">IndiaChan | india-chan.github.io/indiachan/</span>
+                <span class="text-[10px] font-black uppercase text-orange-500/50 tracking-widest">IndiaChan | india-chan.github.io</span>
             </div>
             <p class="text-[11px] text-slate-500 leading-relaxed max-w-md mx-auto mb-6">IndiaChan is a law-abiding platform. All posts are user-generated. Not Associated with Older/Other IndiaChan or BharatChan</p>
             <div class="glass p-4 rounded-2xl inline-block border border-white/5">
@@ -122,11 +122,9 @@
             status.classList.remove('hidden');
 
             try {
-                // 1. Get the Key from Worker
                 const config = await api("?config=true");
                 if (!config || !config.imgbb) throw new Error("Could not get API key");
 
-                // 2. Upload to ImgBB
                 const formData = new FormData();
                 formData.append("image", file);
                 
@@ -193,6 +191,9 @@
                             ${t.sticky ? '<span class="sticky-tag">STICKY</span>' : ''}
                             ${t.locked ? '<i class="fa-solid fa-lock text-[10px] text-red-500 mr-2"></i>' : ''}
                             <h2 class="text-sm font-black text-white uppercase truncate tracking-tight">${t.title || 'Anonymous'}</h2>
+                            <span class="ml-3 text-[10px] font-bold text-slate-600 bg-white/5 px-2 py-0.5 rounded-full">
+                                <i class="fa-solid fa-comments mr-1 opacity-50"></i>${t.replies?.length || 0}
+                            </span>
                         </div>
                         <p class="text-slate-500 text-[11px] line-clamp-2 opacity-80">${t.replies && t.replies[0] ? t.replies[0].content : ''}</p>
                     </div>
@@ -252,7 +253,7 @@
             });
             if(res) { 
                 closeModal(); 
-                isVerified = false; // Reset for next post
+                isVerified = false; 
                 router(); 
             }
         }
@@ -289,7 +290,7 @@
 
         function openModal() { 
             document.getElementById('postModal').classList.remove('hidden'); 
-            if (typeof turnstile !== "undefined") turnstile.reset(); // Reset Turnstile on open
+            if (typeof turnstile !== "undefined") turnstile.reset(); 
         }
         function closeModal() { document.getElementById('postModal').classList.add('hidden'); }
         function toggleMenu(id) { const el = document.getElementById(`m-${id}`); document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) m.classList.add('hidden'); }); el.classList.toggle('hidden'); }
