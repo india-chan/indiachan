@@ -136,13 +136,16 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center mb-1">
                             ${t.sticky ? '<span class="sticky-tag">STICKY</span>' : ''}
+                            ${t.locked ? '<i class="fa-solid fa-lock text-[10px] text-red-500 mr-2"></i>' : ''}
                             <h2 class="text-sm font-black text-white uppercase truncate tracking-tight">${t.title || 'Anonymous'}</h2>
                         </div>
                         <p class="text-slate-500 text-[11px] line-clamp-2 opacity-80">${t.replies && t.replies[0] ? t.replies[0].content : ''}</p>
                     </div>
                     <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
                     <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
-                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Sticky</button>
+                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Toggle Sticky</button>
+                        <button onclick="event.stopPropagation(); handleAction('lock', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Toggle Lock</button>
+                        <button onclick="event.stopPropagation(); handleAction('edit', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Edit OP</button>
                         <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-400 border-b border-white/5">Delete Thread</button>
                         <button onclick="event.stopPropagation(); handleAction('nuke', null, null, '${t.replies && t.replies[0] ? t.replies[0].ip : ''}')" class="w-full p-4 text-left text-red-600 bg-red-500/5">Nuke IP</button>
                     </div>
@@ -154,7 +157,7 @@
             document.getElementById('mainFooter').style.display = 'none';
             document.getElementById('view-container').innerHTML = `
                 <button onclick="window.location.hash = ''" class="mb-8 text-[10px] font-black uppercase text-slate-500 hover:text-orange-500"><i class="fa-solid fa-chevron-left mr-2"></i> Return</button>
-                <h1 class="text-xl font-black text-white mb-8 uppercase tracking-tighter">${t.title}</h1>
+                <h1 class="text-xl font-black text-white mb-8 uppercase tracking-tighter">${t.title} ${t.locked ? '<i class="fa-solid fa-lock text-sm text-red-500 ml-2"></i>' : ''}</h1>
                 <div class="space-y-6 pb-24">
                     ${t.replies.map((r, i) => `
                         <div class="relative glass p-7 rounded-[2.5rem]">
@@ -165,6 +168,7 @@
                                 </div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800 hover:text-white p-2"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
+                                    <button onclick="handleAction('edit', '${t.id}', '${r.id}')" class="w-full p-4 text-left border-b border-white/5">Edit Text</button>
                                     <button onclick="handleAction('ban', null, null, '${r.ip}')" class="w-full p-4 text-left border-b border-white/5">Ban User</button>
                                     <button onclick="handleAction('delete', '${t.id}', '${r.id}')" class="w-full p-4 text-left text-red-500 border-b border-white/5">Delete Post</button>
                                     <button onclick="handleAction('nuke', null, null, '${r.ip}')" class="w-full p-4 text-left text-red-600">Nuke IP</button>
@@ -174,7 +178,7 @@
                             ${r.image ? `<img src="${r.image}" class="post-img" onclick="toggleExpand(this)">` : ''}
                         </div>`).join('')}
                 </div>
-                <div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>
+                ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>` : '<div class="fixed bottom-10 left-4 right-4 text-center text-red-500 font-black uppercase text-[10px] tracking-widest">Thread Locked</div>'}
             `;
             window.scrollTo(0, 0);
         }
@@ -197,10 +201,23 @@
             const pass = prompt("Admin Pass:"); if(!pass) return;
             const headers = { 'X-Admin-Pass': pass };
             let res;
-            if (type === 'sticky') res = await api(`?id=${tId}`, "PATCH", { action: 'sticky' }, headers);
-            else if (type === 'nuke') res = await api(`?nukeIp=${ip}`, "DELETE", null, headers);
-            else if (type === 'ban') res = await api("", "POST", { action: 'ban', targetIp: ip }, headers);
-            else res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, "DELETE", null, headers);
+            
+            if (type === 'sticky') {
+                res = await api(`?id=${tId}`, "PATCH", { action: 'sticky' }, headers);
+            } else if (type === 'lock') {
+                res = await api(`?id=${tId}`, "PATCH", { action: 'lock' }, headers);
+            } else if (type === 'edit') {
+                const newContent = prompt("Enter new content:");
+                if (!newContent) return;
+                res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, "PATCH", { action: 'edit', newContent }, headers);
+            } else if (type === 'nuke') {
+                res = await api(`?nukeIp=${ip}`, "DELETE", null, headers);
+            } else if (type === 'ban') {
+                res = await api("", "POST", { action: 'ban', targetIp: ip }, headers);
+            } else {
+                res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, "DELETE", null, headers);
+            }
+            
             if(res) router();
         }
 
