@@ -9,6 +9,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -78,30 +79,74 @@
                 <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <input id="inpTitle" type="text" maxlength="100" placeholder="Subject (Max 100)" class="w-full p-5 rounded-2xl mb-4 text-sm font-bold">
-            <textarea id="inpContent" maxlength="500" placeholder="Enter anonymous content..." class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            <textarea id="inpContent" maxlength="2000" placeholder="Enter anonymous content..." class="w-full p-5 rounded-2xl mb-5 h-48 outline-none text-sm leading-relaxed whitespace-pre-wrap"></textarea>
+            
             <div class="mb-4">
-                <p class="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-widest">Upload to <a href="https://imgbb.com" target="_blank" class="accent-text underline">ImgBB</a> & Paste Link Below</p>
-                <input id="inpImageLink" type="url" placeholder="Paste image URL here..." class="w-full p-4 rounded-xl text-xs font-bold mb-2">
+                <p class="text-[10px] font-bold text-slate-500 mb-2 uppercase tracking-widest">Image Attachment</p>
+                <div class="flex gap-2">
+                    <input id="inpImageLink" type="url" placeholder="Paste image URL..." class="flex-1 p-4 rounded-xl text-xs font-bold">
+                    <button onclick="document.getElementById('fileInput').click()" class="bg-slate-800 text-white px-4 rounded-xl text-[10px] font-black uppercase border border-white/10">Upload</button>
+                </div>
+                <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="handleFileUpload(this)">
+                <p id="uploadStatus" class="text-[9px] mt-2 font-bold accent-text hidden">Uploading...</p>
             </div>
-            <div class="bg-slate-900/80 p-4 rounded-2xl border border-white/5 flex items-center justify-between mb-8">
-                <span id="captchaTxt" class="text-[10px] font-black text-slate-500 uppercase"></span>
-                <input id="inpCaptcha" type="number" class="w-14 bg-transparent text-center border-b-2 border-orange-500 outline-none font-black text-white">
+
+            <div class="flex justify-center mb-8">
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_dH6OyYpRpy3_n" data-callback="onCaptchaSuccess"></div>
             </div>
-            <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-5 rounded-[1.5rem] text-white font-black uppercase tracking-widest hover:brightness-110 transition-all">Transmit Message</button>
+
+            <button id="submitBtn" onclick="submitPost()" class="accent-bg w-full py-5 rounded-[1.5rem] text-white font-black uppercase tracking-widest hover:brightness-110 transition-all opacity-50 cursor-not-allowed" disabled>Transmit Message</button>
         </div>
     </div>
 
     <script>
         const WORKER_URL = 'https://indiachan.indiachan.workers.dev/'; 
-        let captchaAns = 0;
+        let isVerified = false;
+
+        function onCaptchaSuccess() {
+            isVerified = true;
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
 
         function acceptAge() { localStorage.setItem('v3_age', 't'); document.getElementById('ageWall').remove(); }
         if(localStorage.getItem('v3_age')) document.getElementById('ageWall').remove();
 
-        function genCaptcha() {
-            const a = Math.floor(Math.random() * 9) + 1; const b = Math.floor(Math.random() * 9) + 1;
-            captchaAns = a + b; document.getElementById('captchaTxt').innerText = `${a} + ${b} =`;
-            document.getElementById('inpCaptcha').value = '';
+        async function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const status = document.getElementById('uploadStatus');
+            status.innerText = "Uploading to ImgBB...";
+            status.classList.remove('hidden');
+
+            try {
+                // 1. Get the Key from Worker
+                const config = await api("?config=true");
+                if (!config || !config.imgbb) throw new Error("Could not get API key");
+
+                // 2. Upload to ImgBB
+                const formData = new FormData();
+                formData.append("image", file);
+                
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${config.imgbb}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('inpImageLink').value = data.data.url;
+                    status.innerText = "Upload Success!";
+                    setTimeout(() => status.classList.add('hidden'), 2000);
+                } else {
+                    throw new Error("Upload failed");
+                }
+            } catch (e) {
+                alert("Upload failed: " + e.message);
+                status.classList.add('hidden');
+            }
         }
 
         function toggleExpand(el) { el.classList.toggle('expanded'); }
@@ -196,8 +241,7 @@
         }
 
         async function submitPost() {
-            const val = parseInt(document.getElementById('inpCaptcha').value);
-            if (val !== captchaAns) return alert("Captcha failed.");
+            if (!isVerified) return alert("Please complete the captcha.");
             const h = window.location.hash; const isReply = h.startsWith('#thread/');
             const res = await api("", "POST", {
                 type: isReply ? 'reply' : 'thread',
@@ -206,7 +250,11 @@
                 content: document.getElementById('inpContent').value,
                 image: document.getElementById('inpImageLink').value
             });
-            if(res) { closeModal(); router(); }
+            if(res) { 
+                closeModal(); 
+                isVerified = false; // Reset for next post
+                router(); 
+            }
         }
 
         async function handleAction(type, tId, rId = null, ip = null) {
@@ -239,7 +287,10 @@
             if(res) router();
         }
 
-        function openModal() { genCaptcha(); document.getElementById('postModal').classList.remove('hidden'); }
+        function openModal() { 
+            document.getElementById('postModal').classList.remove('hidden'); 
+            if (typeof turnstile !== "undefined") turnstile.reset(); // Reset Turnstile on open
+        }
         function closeModal() { document.getElementById('postModal').classList.add('hidden'); }
         function toggleMenu(id) { const el = document.getElementById(`m-${id}`); document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) m.classList.add('hidden'); }); el.classList.toggle('hidden'); }
 
