@@ -7,6 +7,8 @@
     <meta name="description" content="IndiaChan: The premier anonymous imageboard for India. Discuss tech, culture, news, and gaming privately.">
     <meta name="keywords" content="indiachan, indian imageboard, bharatchan, 4chan india, anonymous indian forum">
     
+    <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEi8vvXAjT4D0-_fynv8GhU6ipndl0T1UiwTJmYzYizupAzFbmmSvCfF8OZYwYBI1H63OUilYcHqwaSjXjGF1t90wmwBlyr1-rbZWvXwgOBBg5c9foCTXBwhjRzr82TsT7BPQo0Ii03NjHjOdnDkbDV6OT2IS8J0ixJDcf5ObQMntEIbCyH8Xt7sGkfh6u7F">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -265,12 +267,18 @@
                 </div>
                 ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>` : '<div class="fixed bottom-10 left-4 right-4 text-center text-red-500 font-black uppercase text-[10px] tracking-widest bg-[#05070a]/80 py-4 backdrop-blur-md rounded-full border border-red-500/20">Thread Locked / Archived</div>'}
             `;
-            window.scrollTo(0, 0);
         }
 
         async function submitPost() {
             if (!isVerified) return alert("Please complete the captcha.");
-            const h = window.location.hash; const isReply = h.startsWith('#thread/');
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "TRANSMITTING...";
+
+            const h = window.location.hash; 
+            const isReply = h.startsWith('#thread/');
+            
             const res = await api("", "POST", {
                 type: isReply ? 'reply' : 'thread',
                 threadId: isReply ? h.split('/')[1] : null,
@@ -278,10 +286,23 @@
                 content: document.getElementById('inpContent').value,
                 image: document.getElementById('inpImageLink').value
             });
+
             if(res) { 
+                document.getElementById('inpTitle').value = "";
+                document.getElementById('inpContent').value = "";
+                document.getElementById('inpImageLink').value = "";
                 closeModal(); 
                 isVerified = false; 
-                router(); 
+                // Wait 800ms for KV database consistency before refresh
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = "Transmit Message";
+                    router(); 
+                }, 800);
+            } else {
+                btn.disabled = false;
+                btn.innerText = "Transmit Message";
+                alert("Submission failed.");
             }
         }
 
@@ -339,6 +360,15 @@
         }
 
         window.onhashchange = router;
+
+        // --- 30 SECOND AUTO REFRESH (Saves Bandwidth on inactive tabs) ---
+        setInterval(() => {
+            if (!document.hidden) {
+                console.log("Auto-refreshing content...");
+                router();
+            }
+        }, 30000);
+
         const bannerImgs = [
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJXoVN6ABWKt4gMrm4eay9-_ivwv43h8YggYhTet6eR8uDMZg-W38zsbwCTNS7apRVB-BXd8ayC1n7oFi7xavb0vSNEHPLEbd2daTSKoAnYiO0RRDQVTsLIdzWwTR3Twk3Z13diw-5N4Zyl_ZgmD7_ur7k8uEWTYDEsf-_SgWS251vuXNHh93T0X_PNXgM/s0/40702.png",
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiq8iBOzFptKekj2zgN5_WFKemUaCJhC2RMcaxXB03OoJInVbkxuqrzgYLlbFTvy0vB-nJYdIz-qkq-TqEpqoHKg2GOm8xp9M38F1RwvOfMFW9mrTkrHo_i2fHCAVESlcBFYq4_qRoVmqFkwqWr9KmNDXYlqF5u11GGtUEmxeCASfvs6ZXwHhGk_cIJPtjr/s0/40699.png",
