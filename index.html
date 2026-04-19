@@ -24,8 +24,6 @@
         
         .post-img { max-width: 200px; max-height: 200px; object-fit: contain; border-radius: 12px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.05); cursor: zoom-in; display: block; transition: all 0.1s ease; }
         .post-img.expanded { max-width: 100%; max-height: none; cursor: zoom-out; }
-        
-        /* Video Container for Turbo.cr Embeds */
         .video-container { width: 100%; max-width: 480px; aspect-ratio: 16/9; margin-top: 12px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: #000; }
 
         .thumb-box { width: 85px; height: 85px; min-width: 85px; border-radius: 166px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); }
@@ -111,7 +109,7 @@
         let isVerified = false;
         let frame = null;
 
-        // --- Turbo.cr Integration ---
+        // Turbo.cr Popup Logic
         function splashOpen(url) {
             var winFeatures = 'screenX=0,screenY=0,top=0,left=0,scrollbars,width=400,height=600';
             return window.open(url, 'turboUpload', winFeatures);
@@ -147,41 +145,28 @@
         async function handleFileUpload(input) {
             const file = input.files[0];
             if (!file) return;
-
             const status = document.getElementById('uploadStatus');
-            status.innerText = "Uploading to ImgBB...";
+            status.innerText = "Uploading...";
             status.classList.remove('hidden');
-
             try {
                 const config = await api("?config=true");
-                if (!config || !config.imgbb) throw new Error("Could not get API key");
-
                 const formData = new FormData();
                 formData.append("image", file);
-                
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${config.imgbb}`, {
-                    method: "POST",
-                    body: formData
-                });
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${config.imgbb}`, { method: "POST", body: formData });
                 const data = await res.json();
-
                 if (data.success) {
                     document.getElementById('inpImageLink').value = data.data.url;
                     status.innerText = "Upload Success!";
                     setTimeout(() => status.classList.add('hidden'), 2000);
-                } else {
-                    throw new Error("Upload failed");
                 }
-            } catch (e) {
-                alert("Upload failed: " + e.message);
-                status.classList.add('hidden');
-            }
+            } catch (e) { status.classList.add('hidden'); }
         }
 
         function toggleExpand(el) { el.classList.toggle('expanded'); }
 
         async function api(path = "", method = "GET", body = null, headers = {}) {
-            const url = path.includes('?') ? `${WORKER_URL}${path}&t=${Date.now()}` : `${WORKER_URL}${path}?t=${Date.now()}`;
+            const sep = path.includes('?') ? '&' : '?';
+            const url = `${WORKER_URL}${path}${sep}t=${Date.now()}`;
             const options = { method, headers: { ...headers } };
             if (body) { options.headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(body); }
             const res = await fetch(url, options);
@@ -214,7 +199,7 @@
                 : '';
 
             document.getElementById('view-container').innerHTML = headerInfo + filteredThreads.map((t, i) => `
-                <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover hover:z-[110] p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
+                <div onclick="window.location.hash = '#thread/${t.id}'" class="relative glass glass-hover p-5 rounded-[2.5rem] flex gap-5 items-center cursor-pointer">
                     <div class="thread-number">#${i + 1}</div>
                     ${getThumb(t.replies ? t.replies[0] : null)}
                     <div class="flex-1 min-w-0">
@@ -230,11 +215,11 @@
                     </div>
                     <button onclick="event.stopPropagation(); toggleMenu('${t.id}')" class="p-3 text-slate-700 hover:text-white"><i class="fa-solid fa-ellipsis-v"></i></button>
                     <div id="m-${t.id}" class="admin-menu hidden absolute right-6 top-16 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
-                        <button onclick="event.stopPropagation(); handleAction('report', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Report Thread</button>
-                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Toggle Sticky</button>
-                        <button onclick="event.stopPropagation(); handleAction('lock', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">${t.locked ? 'Unlock Thread' : 'Lock Thread'}</button>
-                        <button onclick="event.stopPropagation(); handleAction('edit', '${t.id}')" class="w-full p-4 text-left hover:bg-white/5 border-b border-white/5">Edit OP</button>
-                        <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-400 border-b border-white/5">Delete Thread</button>
+                        <button onclick="event.stopPropagation(); handleAction('report', '${t.id}')" class="w-full p-4 text-left border-b border-white/5">Report Thread</button>
+                        <button onclick="event.stopPropagation(); handleAction('sticky', '${t.id}')" class="w-full p-4 text-left border-b border-white/5">Toggle Sticky</button>
+                        <button onclick="event.stopPropagation(); handleAction('lock', '${t.id}')" class="w-full p-4 text-left border-b border-white/5">${t.locked ? 'Unlock Thread' : 'Lock Thread'}</button>
+                        <button onclick="event.stopPropagation(); handleAction('edit', '${t.id}')" class="w-full p-4 text-left border-b border-white/5">Edit OP</button>
+                        <button onclick="event.stopPropagation(); handleAction('delete', '${t.id}')" class="w-full p-4 text-left text-red-400">Delete Thread</button>
                     </div>
                 </div>
             `).join('');
@@ -248,38 +233,24 @@
                 <h1 class="text-xl font-black text-white mb-8 uppercase tracking-tighter">${t.title} ${t.locked ? '<i class="fa-solid fa-lock text-sm text-red-500 ml-2"></i>' : ''}</h1>
                 <div class="space-y-6 pb-24">
                     ${t.replies.map((r, i) => {
-                        let contentHtml = r.content
-                            .replace(/>>([a-fA-F0-9]{8})/g, '<span class="accent-text font-bold">>>$1</span>');
-
-                        // --- Video Embedding Fix ---
+                        let contentHtml = r.content.replace(/>>([a-fA-F0-9]{8})/g, '<span class="accent-text font-bold">>>$1</span>');
+                        
+                        // Turbo.cr [MEDIA] parsing
                         const mediaRegex = /\[MEDIA=saint_vid\](.*?)\[\/MEDIA\]/g;
                         const mediaEmbeds = [];
                         contentHtml = contentHtml.replace(mediaRegex, (match, videoId) => {
-                            mediaEmbeds.push(`
-                                <div class="video-container">
-                                    <iframe src="https://turbo.cr/embed/${videoId}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-                                </div>
-                            `);
+                            mediaEmbeds.push(`<div class="video-container"><iframe src="https://turbo.cr/embed/${videoId}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe></div>`);
                             return ""; 
                         });
 
                         const urlRegex = /(https?:\/\/[^\s]+)/g;
                         const embeds = [];
-                        
                         contentHtml = contentHtml.replace(urlRegex, (match, url) => {
-                            const isNoEmbed = r.content.includes(`NOT_EMBED:${url}`);
-                            if (isNoEmbed) {
-                                return match.replace('NOT_EMBED:', '');
-                            }
-
+                            if (r.content.includes(`NOT_EMBED:${url}`)) return match.replace('NOT_EMBED:', '');
                             const isImg = url.match(/\.(jpeg|jpg|gif|png|webp)$/i);
                             const isVid = url.match(/\.(mp4|webm|ogg)$/i);
-
-                            if (isImg) {
-                                embeds.push(`<img src="${url}" class="post-img" onclick="toggleExpand(this)">`);
-                            } else if (isVid) {
-                                embeds.push(`<video controls class="post-img"><source src="${url}"></video>`);
-                            }
+                            if (isImg) embeds.push(`<img src="${url}" class="post-img" onclick="toggleExpand(this)">`);
+                            else if (isVid) embeds.push(`<video controls class="post-img"><source src="${url}"></video>`);
                             return `<a href="${url}" target="_blank" class="text-orange-500 underline text-xs">${url}</a>`;
                         });
 
@@ -289,7 +260,6 @@
                                 <div class="flex items-center gap-3">
                                     <img src="https://flagcdn.com/w20/${(r.country || 'un').toLowerCase()}.png" class="flag-icon">
                                     <span onclick="quoteReply('${r.userId}')" class="text-[10px] font-black text-slate-500 uppercase clickable-id">ID: ${r.userId}</span>
-                                    <span class="text-[9px] font-bold text-slate-600 tracking-tighter ml-1">${r.time || ''}</span>
                                 </div>
                                 <button onclick="toggleMenu('${r.id}')" class="text-slate-800 hover:text-white p-2"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div id="m-${r.id}" class="admin-menu hidden absolute right-8 top-12 w-44 glass rounded-2xl z-[100] text-[9px] font-black uppercase border border-white/10 overflow-hidden shadow-2xl">
@@ -306,13 +276,12 @@
                         </div>`;
                     }).join('')}
                 </div>
-                ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>` : '<div class="fixed bottom-10 left-4 right-4 text-center text-red-500 font-black uppercase text-[10px] tracking-widest bg-[#05070a]/80 py-4 backdrop-blur-md rounded-full border border-red-500/20">Thread Locked / Archived</div>'}
+                ${!t.locked ? `<div class="fixed bottom-10 left-4 right-4 max-w-2xl mx-auto"><button onclick="openModal()" class="accent-bg w-full py-5 rounded-[2rem] text-white font-black uppercase tracking-widest shadow-xl">Post Reply</button></div>` : ''}
             `;
         }
 
         async function submitPost() {
-            if (!isVerified) return alert("Please complete the captcha.");
-            
+            if (!isVerified) return;
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerText = "TRANSMITTING...";
@@ -332,13 +301,11 @@
                 document.getElementById('inpTitle').value = "";
                 document.getElementById('inpContent').value = "";
                 document.getElementById('inpImageLink').value = "";
-                closeModal(); 
+                closeModal();
+                btn.disabled = false;
+                btn.innerText = "Transmit Message";
                 isVerified = false; 
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerText = "Transmit Message";
-                    router(); 
-                }, 800);
+                await router(); // Immediate refresh
             } else {
                 btn.disabled = false;
                 btn.innerText = "Transmit Message";
@@ -352,68 +319,54 @@
                 if(res) alert("Post reported.");
                 return;
             }
-
             const pass = prompt("Admin Pass:"); if(!pass) return;
             const headers = { 'X-Admin-Pass': pass };
             let res;
-            
-            if (type === 'sticky') {
-                res = await api(`?id=${tId}`, "PATCH", { action: 'sticky' }, headers);
-            } else if (type === 'lock') {
-                res = await api(`?id=${tId}`, "PATCH", { action: 'lock' }, headers);
-            } else if (type === 'edit') {
-                const newContent = prompt("Enter new content:");
+            if (type === 'sticky') res = await api(`?id=${tId}`, "PATCH", { action: 'sticky' }, headers);
+            else if (type === 'lock') res = await api(`?id=${tId}`, "PATCH", { action: 'lock' }, headers);
+            else if (type === 'edit') {
+                const newContent = prompt("New content:");
                 if (!newContent) return;
                 res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, "PATCH", { action: 'edit', newContent }, headers);
-            } else if (type === 'nuke') {
-                res = await api(`?nukeIp=${ip}`, "DELETE", null, headers);
-            } else if (type === 'ban') {
-                res = await api("", "POST", { action: 'ban', targetIp: ip }, headers);
-            } else {
-                res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, "DELETE", null, headers);
             }
-            
+            else if (type === 'ban') res = await api("", "POST", { action: 'ban', targetIp: ip }, headers);
+            else res = await api(`?id=${tId}${rId ? '&replyId='+rId : ''}`, "DELETE", null, headers);
             if(res) router();
         }
 
-        function openModal() { 
-            document.getElementById('postModal').classList.remove('hidden'); 
-            if (typeof turnstile !== "undefined") turnstile.reset(); 
-        }
+        function openModal() { document.getElementById('postModal').classList.remove('hidden'); if (typeof turnstile !== "undefined") turnstile.reset(); }
         function closeModal() { document.getElementById('postModal').classList.add('hidden'); }
-        function toggleMenu(id) { const el = document.getElementById(`m-${id}`); document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) m.classList.add('hidden'); }); el.classList.toggle('hidden'); }
+        function toggleMenu(id) { 
+            const el = document.getElementById(`m-${id}`); 
+            document.querySelectorAll('[id^="m-"]').forEach(m => { if(m !== el) m.classList.add('hidden'); });
+            el.classList.toggle('hidden'); 
+        }
 
         async function router() {
             const h = window.location.hash;
+            let data;
             if (h.startsWith('#thread/')) { 
-                const t = await api(`?id=${h.split('/')[1]}`); 
-                if(t) renderThread(t); 
+                data = await api(`?id=${h.split('/')[1]}`); 
+                if(data) renderThread(data); 
             } 
             else if (h === '#archive') {
-                const threads = await api();
-                renderBoard(threads || [], true);
+                data = await api();
+                renderBoard(data || [], true);
             }
             else { 
-                const threads = await api(); 
-                renderBoard(threads || [], false); 
+                data = await api(); 
+                renderBoard(data || [], false); 
             }
         }
 
         window.onhashchange = router;
-
-        setInterval(() => {
-            if (!document.hidden) {
-                console.log("Auto-refreshing content...");
-                router();
-            }
-        }, 30000);
+        setInterval(() => { if (!document.hidden) router(); }, 30000);
 
         const bannerImgs = [
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhJXoVN6ABWKt4gMrm4eay9-_ivwv43h8YggYhTet6eR8uDMZg-W38zsbwCTNS7apRVB-BXd8ayC1n7oFi7xavb0vSNEHPLEbd2daTSKoAnYiO0RRDQVTsLIdzWwTR3Twk3Z13diw-5N4Zyl_ZgmD7_ur7k8uEWTYDEsf-_SgWS251vuXNHh93T0X_PNXgM/s0/40702.png",
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiq8iBOzFptKekj2zgN5_WFKemUaCJhC2RMcaxXB03OoJInVbkxuqrzgYLlbFTvy0vB-nJYdIz-qkq-TqEpqoHKg2GOm8xp9M38F1RwvOfMFW9mrTkrHo_i2fHCAVESlcBFYq4_qRoVmqFkwqWr9KmNDXYlqF5u11GGtUEmxeCASfvs6ZXwHhGk_cIJPtjr/s0/40699.png",
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgXCOtczpXgpFJBNTJPN6AUSIZPlrTlXPZdMRRP87oDTHA4rgSZBGINiS05rj7qOpMQN6LJSZ8BhuisUefNKY0a5IoZS7uBJ_bkbd-YarYdig_26S3SMuTRzlfw1HMFpoIYjTAlt-cghfP5s9fTjyIBsiPME9_nuVcehLeaCdytOmmSIciF9n4KxXbcmxUQ/s0/40697.png",
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzIjRLJoL04m2jI97E3TRQgxZ8muF39OJDVt4Z9IkGN5lu72zOhrXDu-glheHJluKugW0nWE3BcDSCe5bTruLaS_kBNFdsO3Tll2CZwy7yNNt9g9XdDiGeWHdDDv0sElBG4XFUMTuUzSyWlas-VNZWWAx_NYAbMTOiSZ9jW5UR7mspnxxlGQCWLal0y2X2/s0/40696.gif",
-            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBQzTfkmOiD9EXTsaokfM_DjAF73x_ep4MFautqtKXijgXzPyQAqPxsTfsEqqR0hXcN9I-YOxAd_-s3kwqfxb8NyfHtEJyNJUs8D5J1a2xazSbSQ-sFv4jPC3EfJLIxuzlAqepA1I1EhcWhcu1-BYzirtMJwF_DHBvNte2peG57DdZK04xICh_AwpILeCP/s0/40692.png"
+            "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzIjRLJoL04m2jI97E3TRQgxZ8muF39OJDVt4Z9IkGN5lu72zOhrXDu-glheHJluKugW0nWE3BcDSCe5bTruLaS_kBNFdsO3Tll2CZwy7yNNt9g9XdDiGeWHdDDv0sElBG4XFUMTuUzSyWlas-VNZWWAx_NYAbMTOiSZ9jW5UR7mspnxxlGQCWLal0y2X2/s0/40696.gif"
         ];
         const topB = document.getElementById('topBanner');
         topB.src = bannerImgs[Math.floor(Math.random() * bannerImgs.length)];
